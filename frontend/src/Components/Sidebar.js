@@ -4,11 +4,11 @@ import './Sidebar.css';
 function Sidebar({ className, lists, onAddList, newListName, onNewListNameChange }) {
   return (
     <div className={className}>
-      <h2>Lists</h2>
+      <h2>To-Do Lists</h2>
       <div className="add-list-section">
         <input 
           type="text"
-          placeholder="Add new list..."
+          placeholder="Add new to-do list..."
           value={newListName}
           onChange={onNewListNameChange}
           className="add-list-input"

@@ -1,0 +1,39 @@
+
+
+
+/* Header style to make it centered */
+.header {
+  color: black;
+  padding: 60px;
+  font-size: 2.0em;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  font-weight: bold;
+  margin: 0 auto; /* Center the header within its container */
+  width: 100%;
+  box-sizing: border-box;
+  transform: translateX(10%); /* Adjust for padding */
+}
+
+.content-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: auto; /* Move content container to the middle after the sidebar */
+  margin-right: auto;
+  width: 75%; /* Adjust width to fit comfortably with the sidebar */
+  padding-top: 0;
+}
+
+.main-content {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center-align the task lists */
+  transform: translateX(16%); /* Adjust for padding */
+}
+
+
+
+
+

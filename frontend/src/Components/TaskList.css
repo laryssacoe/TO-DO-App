@@ -1,0 +1,175 @@
+/* Container for each list */
+/* TaskList.css */
+
+.list-container {
+  width: 80%;
+  background-color: #F5F5FF; /* Light purple background */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Darker shadow for more prominence */
+  margin: 30px auto; /* Space between lists and centering */
+  border: 2px solid #6D6DA0; /* Purple border */
+  text-align: left; 
+  align-items: center;
+  position: relative; /* Allows for positioning of the toggle button */
+}
+
+
+.task-item {
+  background-color: #FFFFFF; /* White background for each task */
+  padding: 15px;
+  align-items: center;
+  border-radius: 8px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25); /* Prominent shadow for task */
+  margin-bottom: 15px; /* Space between each task */
+  border: 1px solid #6D6DA0; /* Border to match the list container */
+}
+
+.subtask-item {
+  background-color: #F9F9F9; /* Slightly lighter background for subtasks */
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 10px; /* Space between each subtask */
+  border: 1px solid #D3D3D3; /* Light border for subtasks */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); /* Subtle shadow for subtasks */
+}
+
+/* TaskList.css */
+
+.list-header {
+  display: flex;
+  align-items: left;
+  justify-content: space-between;
+  background-color: #f4f4f9; /* Light background color to make it stand out */
+  padding: 10px 15px;
+  border-radius: 8px 8px 0 0; /* Rounded corners on the top */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.list-title {
+  font-weight: bold;
+  font-size: 1.5em;
+  align-items: left;
+  margin: 0;
+  color: #333333;
+  top: 20px;
+  text-align: left;
+}
+
+
+.expand-btn {
+  background-color: #6D6DA0; /* Dark Purple for consistent branding */
+  border: none;
+  color: white; /* Makes the text stand out */
+  font-size: 1.5em;
+  cursor: pointer;
+  border-radius: 5px;
+  padding: 4px 8px;
+  font-weight: bold;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+.expand-btn:hover {
+  background-color: #5b5b84; /* Slightly darker on hover */
+}
+
+
+/* Task list styling */
+.task-list {
+  padding: 20px; /* No padding around task list */
+  list-style: none; /* Remove default list styling */
+  align-items: center;
+  justify-content: space-between;
+  margin: 10px;
+}
+
+.task-item .task-text {
+  margin-left: 10px;
+  flex-grow: 1; /* Allow the text to take remaining space */
+}
+
+.task-item input[type='checkbox'] {
+  margin-right: 10px; /* Space before task text */
+}
+
+
+/* Styling for task details (text and checkbox) */
+.task-details {
+  display: flex;
+  align-items: center;
+}
+
+/* Completed task styling */
+.completed-item .task-text {
+  text-decoration: line-through;
+  color: #888; /* Grey color for completed tasks */
+}
+
+/* Subtask list */
+.subtask-list {
+  padding-left: 20px; /* Indent subtasks */
+}
+
+.add-task {
+  display: flex;
+  margin-top: 10px;
+  padding: 8px;
+  border-radius: 5px;
+  align-items: right;
+  justify-content: right;
+  text-align: right;
+}
+
+
+/* Other styling for inputs and buttons */
+.new-task-input {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 8px;
+}
+
+.add-task-btn {
+  background-color: #f0a500;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-left: 5px;
+  font-family: 'Poppins', sans-serif; 
+  font-weight: bold;
+  align-items: right;
+}
+    
+
+.add-task-btn:hover {
+  background-color: #de94e8; /* Darker shade for hover effect */
+}
+
+
+.toggle-button {
+  width: 30px;
+  height: 30px;
+  background-color: #6D6DA0;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px; /* For a slightly rounded rectangle */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  display: flex;
+  font-size: 1.5em;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease;
+}
+
+.toggle-button:hover {
+  transform: scale(1.05);
+}
+
+.toggle-button:active {
+  transform: scale(0.95);
+}
