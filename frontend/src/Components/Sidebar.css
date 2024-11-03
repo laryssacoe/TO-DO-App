@@ -1,0 +1,83 @@
+/* Sidebar styling */
+
+.sidebar {
+width: 20%; /* Sets sidebar width to 20% of the screen from the left */
+min-width: 200px; /* Minimum width to ensure it doesn't get too small */
+height: 100vh;        
+background-color: #b0a3d4; /* Background color from the web app palette */
+color: #181846;
+padding: 20px;        
+left: 0;               
+display: flex;
+overflow-y: auto;
+z-index: 1;
+box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+flex-direction: column; /* Arranges lists in a column */
+align-items: stretch; /* Stretches children to fill sidebar width */
+box-sizing: border-box; 
+position: fixed; /* Keep the sidebar in a fixed position */
+}
+  
+/* Sidebar heading */
+.sidebar h2 {
+font-size: 1.7em;
+margin-bottom: 20px;
+}
+  
+/* Add list section (input and button) */
+.add-list-section {
+margin-bottom: 20px;
+}
+  
+.add-list-input {
+width: 90%;
+align-items: center;
+padding: 10px;
+margin-bottom: 10px;
+border: 1px solid #6D6DA0;
+border-radius: 5px;
+}
+
+.add-list-btn {
+width: 95%;
+padding: 10px;
+background-color: #F1C555; 
+color: #4a4a91;
+border: none;
+cursor: pointer;
+border-radius: 5px;
+font-family: 'Poppins', sans-serif; 
+font-weight: bold;
+}
+  
+.add-list-btn:hover {
+background-color: #de94e8; 
+}
+  
+/* Lists section */
+.lists {
+list-style-type: none; /* Removes default bullet points */
+padding: 0; 
+width: 80%; 
+max-width: 600px; /* Sets a max width to ensure it renders nicely */
+justify-content: space-between;
+margin: 30px auto; /* Centers the list container */
+}
+  
+.list-item {
+padding: 15px;
+background-color: #FFFFFF;
+border-left: 5px solid #6D6DA0; 
+margin-bottom: 15px; /* Adds space between each list item */
+cursor: pointer;
+border-radius: 5px;
+align-items: center;
+justify-content: space-between;
+display: flex;
+text-align: center;
+}
+  
+  
+.list-item:hover {
+background-color: #F1C555; 
+}
