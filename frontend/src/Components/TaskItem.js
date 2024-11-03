@@ -1,35 +1,49 @@
-import React from 'react';
-import SubTaskItem from './SubTaskItem';
-import './TaskItem.css';
+import React, { useState } from 'react';
+import SubtaskList from './SubtaskList';
 
-function TaskItem({ task, expanded, listId }) {
+const SubtaskRecursive = ({ subtask, addSubtask }) => {
+  const [newSubtaskText, setNewSubtaskText] = useState('');
+
+  const handleInputChange = (e) => {
+    setNewSubtaskText(e.target.value);
+  };
+
+  const handleAddSubtask = () => {
+    if (newSubtaskText.trim()) {
+      addSubtask(subtask.id, newSubtaskText);
+      setNewSubtaskText('');
+    }
+  };
+
   return (
-    <li className={`task-item ${task.completed ? 'completed-item' : ''}`}>
-      <div className="task-header">
-        <span className="toggle-button">
-          {/* Placeholder: Implement handleToggleExpand here */}
-          {expanded ? '[-]' : '[+]'}
-        </span>
+    <li className="subtask-item">
+      <div className="subtask-details">
         <input
           type="checkbox"
-          checked={task.completed}
-          // Placeholder: Implement handleToggleTask here
+          checked={subtask.completed}
+          onChange={() => { /* handle subtask completion */ }}
         />
-        <span className="task-text">
-          {task.text}
-        </span>
+        <span>{subtask.text}</span>
+      </div>
+      
+      {/* Input for adding a new nested subtask */}
+      <div className="add-subtask">
+        <input
+          type="text"
+          value={newSubtaskText}
+          onChange={handleInputChange}
+          placeholder="Add new subtask..."
+          className="new-subtask-input"
+        />
+        <button onClick={handleAddSubtask} className="add-subtask-btn">Add Subtask</button>
       </div>
 
-      {/* Subtasks */}
-      {expanded && Array.isArray(task.subtasks) && task.subtasks.length > 0 && (
-        <ul className="subtask-list">
-          {task.subtasks.map(subtask => (
-            <SubTaskItem key={subtask.id} subtask={subtask} />
-          ))}
-        </ul>
+      {/* Render nested subtasks */}
+      {subtask.subtasks && subtask.subtasks.length > 0 && (
+        <SubtaskList subtasks={subtask.subtasks} addSubtask={addSubtask} />
       )}
     </li>
   );
-}
+};
 
-export default TaskItem;
+export default SubtaskRecursive;
