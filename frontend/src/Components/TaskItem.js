@@ -1,5 +1,5 @@
 import React from 'react';
-import SubtaskItem from './SubtaskItem';
+import SubTaskItem from './SubTaskItem';
 import './TaskItem.css';
 
 function TaskItem({ task, expanded, listId }) {
@@ -24,7 +24,7 @@ function TaskItem({ task, expanded, listId }) {
       {expanded && Array.isArray(task.subtasks) && task.subtasks.length > 0 && (
         <ul className="subtask-list">
           {task.subtasks.map(subtask => (
-            <SubtaskItem key={subtask.id} subtask={subtask} />
+            <SubTaskItem key={subtask.id} subtask={subtask} />
           ))}
         </ul>
       )}
