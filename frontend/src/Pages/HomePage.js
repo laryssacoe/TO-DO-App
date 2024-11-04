@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import Sidebar from '../Components/Sidebar';
 import TaskList from '../Components/TaskList';
 import './Home.css';
@@ -17,19 +16,19 @@ function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        mode: 'cors',
+        credentials: 'include', // Include credentials (cookies)
       });
-
+  
       if (response.ok) {
         const data = await response.json();
-        setLists(data.lists || []); // Sets the lists state with fetched data
+        setLists(data.lists || []);
       } else {
         console.error('Failed to fetch lists', response.status);
       }
     } catch (error) {
       console.error('Network error:', error);
     }
-  };
+  };  
 
   useEffect(() => {
     fetchLists();
@@ -50,6 +49,7 @@ function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // Include session cookies to identify user
         body: JSON.stringify({ name: newListName }),
       });
 
@@ -83,6 +83,7 @@ function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // Include session cookies to identify user
         body: JSON.stringify({ text: newTaskText, list_id: listId }),
       });
 
@@ -96,6 +97,28 @@ function Home() {
       console.error('Network error:', error);
     }
   };
+
+  const handleAddSubtask = async (parentTaskId, subtaskText) => {
+    try {
+      const response = await fetch('http://localhost:4000/add_task', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ text: subtaskText, parent_id: parentTaskId }),
+      });
+
+      if (response.ok) {
+        fetchLists();
+      } else {
+        console.error('Failed to add subtask', response.status);
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+    }
+  };
+  
 
   return (
     <div className="main-container">
@@ -118,6 +141,7 @@ function Home() {
               newTaskTexts={newTaskTexts}
               handleNewTaskChange={handleNewTaskChange}
               handleAddTask={handleAddTask}
+              handleAddSubtask={handleAddSubtask}
               fetchLists={fetchLists} // Pass fetchLists to re-fetch the updated tasks
               setLists={setLists}
             />

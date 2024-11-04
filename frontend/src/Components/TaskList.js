@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Task from './TaskItem';
 import './TaskList.css';
 
-function TaskList({ list, newTaskTexts, handleNewTaskChange, handleAddTask, onAddSubtask, handleTaskCompletion, setLists }) {
+function TaskList({ list, newTaskTexts, handleNewTaskChange, handleAddTask, handleAddSubtask, handleTaskCompletion, setLists }) {
   const [isExpanded, setIsExpanded] = useState(true); // State to track expand/collapse
 
   const handleToggleExpand = () => {
@@ -31,7 +31,7 @@ function TaskList({ list, newTaskTexts, handleNewTaskChange, handleAddTask, onAd
                 key={task.id}
                 task={task}
                 level={1}
-                onAddSubtask={onAddSubtask}
+                onAddSubtask={handleAddSubtask}
                 setLists={setLists} // Pass setLists here
               />
             ))

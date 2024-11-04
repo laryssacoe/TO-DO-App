@@ -14,6 +14,7 @@ function Task({ task, level, onAddSubtask, setLists }) {
     }
   };
 
+
   const handleToggleExpand = () => {
     setIsExpanded(!isExpanded);
   };
@@ -28,6 +29,7 @@ function Task({ task, level, onAddSubtask, setLists }) {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // Include credentials (cookies)
         body: JSON.stringify({ completed: newCompletedStatus }),
       });
 
@@ -101,7 +103,7 @@ function Task({ task, level, onAddSubtask, setLists }) {
       )}
 
       {/* Add Subtask Section */}
-      {level < 5 && (
+      {level < 4 && (
         <div className="add-subtask">
           <input
             type="text"

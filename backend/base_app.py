@@ -153,18 +153,6 @@ def add_list():
         }
     }), 201
 
-@app.route('/test', methods=['GET'])
-def test():
-    session_user = session.get('user_id')
-
-    if session_user:
-        session['user_id'] += 1
-        return jsonify({'message': 'Session active', 'user_id': session_user}), 200
-    
-    else: 
-        session['user_id'] = 1
-        return jsonify({"":session['user_id']}), 200
-
 @app.route('/add_task', methods=['POST'])
 def add_task():
     user_id = session.get('user_id')
@@ -206,6 +194,21 @@ def add_task():
             "subtasks": []
         }
     }), 201
+
+@app.route('/clear_db', methods=['POST'])
+def clear_db():
+    try:
+        # Delete all rows from all tables
+        db.session.query(Task).delete()
+        db.session.query(List).delete()
+        db.session.query(User).delete()
+        db.session.commit()
+
+        return jsonify({'message': 'Database content cleared successfully'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': f'Error clearing database content: {str(e)}'}), 500
+
 
 
 @app.after_request

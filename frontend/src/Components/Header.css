@@ -1,52 +1,50 @@
 .app-header {
-    display: flex;
-    justify-content: space-between; /* Ensures alignment between left and right */
-    align-items: center;
-    padding: 20px;
-    background-color: #b0a3d4;
-    box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    position: sticky;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 2; /* Keep it above other components */
-  }
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30px 30px;
+  background-color: #b0a3d4; /* Update to match your app's purple color */
+  border-bottom: 1px solid #e0e0e0;
+}
 
-  .header-right {
-    display: flex;
-    align-items: center;
-    margin-left: auto; /* Align to the right side */
-  }
-  
-  .user-profile {
-    margin-right: 20px;
-    display: flex;
-    align-items: center;
-  }
-  
-  .user-profile img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-right: 10px;
-  }
-  
-  .user-profile span {
-    font-weight: bold;
-    font-size: 1em;
-  }
-  
-  .logout-button {
-    padding: 10px 20px;
-    background-color: #ff6b6b;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .logout-button:hover {
-    background-color: #ff4b4b;
-  }
-  
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.username {
+  font-weight: bold;
+  font-size: 1.7em;
+  color: #181846; /* White text for better contrast on the purple background */
+  margin-right: 20px;      
+}
+
+.btn {
+  margin-left: 10px;
+  padding: 8px 15px;
+  background-color: #f5a623;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+  background-color: #e5941a;
+}
+
+.btn.log-off {
+  background-color: #e74c3c; /* Red for Log Off button */
+}
+
+.btn.log-off:hover {
+  background-color: #c0392b;
+}
