@@ -1,0 +1,92 @@
+/* AuthPage.css */
+
+.auth-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f0f4f8; /* Light, friendly background */
+  padding: 20px;
+}
+
+.auth-container {
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  width: 400px;
+  max-width: 90%;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.auth-container h2 {
+  margin-bottom: 20px;
+  font-family: 'Poppins', sans-serif;
+  color: #333; /* Dark gray for better contrast */
+  font-weight: bold;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form-group {
+  margin-bottom: 25px;
+  width: 100%;
+  text-align: left; /* Align labels to the left */
+}
+
+.form-group label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 8px;
+  font-family: 'Poppins', sans-serif;
+  color: #555; /* Medium gray */
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  font-size: 1em;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+.auth-button {
+  background-color: #f0a500; /* Bright orange button */
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  font-size: 1.1em;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.3s;
+  width: 100%;
+  font-family: 'Poppins', sans-serif;
+  font-weight: bold;
+}
+
+.auth-button:hover {
+  background-color: #d18b00;
+}
+
+.switch-auth {
+  margin-top: 15px;
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  font-size: 0.9em;
+  font-family: 'Poppins', sans-serif;
+  transition: color 0.3s;
+}
+
+.switch-auth:hover {
+  text-decoration: underline;
+  color: #0056b3;
+}

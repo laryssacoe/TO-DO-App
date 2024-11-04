@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import Task from './TaskItem';
 import './TaskList.css';
 
-function TaskList({ list, newTaskTexts, handleNewTaskChange, handleAddTask }) {
+function TaskList({ list, newTaskTexts, handleNewTaskChange, handleAddTask, onAddSubtask, handleTaskCompletion, setLists }) {
   const [isExpanded, setIsExpanded] = useState(true); // State to track expand/collapse
 
   const handleToggleExpand = () => {
@@ -23,49 +24,21 @@ function TaskList({ list, newTaskTexts, handleNewTaskChange, handleAddTask }) {
 
       {/* Render Tasks under each List */}
       {isExpanded && (
-        <ul className="task-list">
+        <div className="task-list">
           {Array.isArray(list.tasks) && list.tasks.length > 0 ? (
             list.tasks.map((task) => (
-              <li
+              <Task
                 key={task.id}
-                className={`task-item ${task.completed ? 'completed-item' : ''}`}
-              >
-                <div className="task-details">
-                  <input
-                    type="checkbox"
-                    checked={task.completed}
-                    onChange={() => {
-                      /* handle task completion here */
-                    }}
-                  />
-                  <span className="task-text">{task.text}</span>
-                </div>
-                {/* Subtasks */}
-                {Array.isArray(task.subtasks) && task.subtasks.length > 0 && (
-                  <ul className="subtask-list">
-                    {task.subtasks.map((subtask) => (
-                      <li
-                        key={subtask.id}
-                        className={`subtask-item ${subtask.completed ? 'completed-item' : ''}`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={subtask.completed}
-                          onChange={() => {
-                            /* handle subtask completion here */
-                          }}
-                        />
-                        {subtask.text}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </li>
+                task={task}
+                level={1}
+                onAddSubtask={onAddSubtask}
+                setLists={setLists} // Pass setLists here
+              />
             ))
           ) : (
             <p>No tasks available for this list.</p>
           )}
-        </ul>
+        </div>
       )}
 
       {/* Add New Task Section for Selected List */}
@@ -78,7 +51,7 @@ function TaskList({ list, newTaskTexts, handleNewTaskChange, handleAddTask }) {
           className="new-task-input"
         />
         <button onClick={() => handleAddTask(list.id)} className="add-task-btn">
-          Add sub-task to {list.name}
+          Add Task to {list.name}
         </button>
       </div>
     </div>

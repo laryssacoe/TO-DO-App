@@ -8,31 +8,30 @@ function Home() {
   const [lists, setLists] = useState([]);
   const [newListName, setNewListName] = useState('');
   const [newTaskTexts, setNewTaskTexts] = useState({});
-  const [expandedTasks, setExpandedTasks] = useState({});
 
-  // Fetch lists from database
-  useEffect(() => {
-    const fetchLists = async () => {
-      try {
-        const response = await fetch('http://localhost:4000/tasks', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          mode: 'cors',
-        });
+  // Fetch lists from the database
+  const fetchLists = async () => {
+    try {
+      const response = await fetch('http://localhost:4000/tasks', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        mode: 'cors',
+      });
 
-        if (response.ok) {
-          const data = await response.json();
-          setLists(data.lists || []); // Sets the lists state with fetched data
-        } else {
-          console.error('Failed to fetch lists', response.status);
-        }
-      } catch (error) {
-        console.error('Network error:', error);
+      if (response.ok) {
+        const data = await response.json();
+        setLists(data.lists || []); // Sets the lists state with fetched data
+      } else {
+        console.error('Failed to fetch lists', response.status);
       }
-    };
+    } catch (error) {
+      console.error('Network error:', error);
+    }
+  };
 
+  useEffect(() => {
     fetchLists();
   }, []);
 
@@ -55,8 +54,7 @@ function Home() {
       });
 
       if (response.ok) {
-        const result = await response.json();
-        setLists([...lists, result.list]);
+        fetchLists(); // Refetch lists after adding a new one
         setNewListName('');
       } else {
         console.error('Error adding list');
@@ -89,18 +87,7 @@ function Home() {
       });
 
       if (response.ok) {
-        const result = await response.json();
-        setLists(
-          lists.map((list) => {
-            if (list.id === listId) {
-              return {
-                ...list,
-                tasks: list.tasks ? [...list.tasks, result.task] : [result.task],
-              };
-            }
-            return list;
-          })
-        );
+        fetchLists(); // Refetch lists after adding a new task
         setNewTaskTexts({ ...newTaskTexts, [listId]: '' });
       } else {
         console.error('Error adding task');
@@ -131,6 +118,8 @@ function Home() {
               newTaskTexts={newTaskTexts}
               handleNewTaskChange={handleNewTaskChange}
               handleAddTask={handleAddTask}
+              fetchLists={fetchLists} // Pass fetchLists to re-fetch the updated tasks
+              setLists={setLists}
             />
           ))}
         </div>

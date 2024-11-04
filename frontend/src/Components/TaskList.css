@@ -1,4 +1,3 @@
-/* Container for each list */
 /* TaskList.css */
 
 .list-container {
@@ -18,29 +17,19 @@
 .task-item {
   background-color: #FFFFFF; /* White background for each task */
   padding: 15px;
+  list-style-type: none; /* Remove bullet points */
   align-items: center;
   border-radius: 8px;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25); /* Prominent shadow for task */
-  margin-bottom: 15px; /* Space between each task */
+  margin-bottom: 25px; /* Space between each task */
   border: 1px solid #6D6DA0; /* Border to match the list container */
 }
-
-.subtask-item {
-  background-color: #F9F9F9; /* Slightly lighter background for subtasks */
-  padding: 10px;
-  border-radius: 6px;
-  margin-bottom: 10px; /* Space between each subtask */
-  border: 1px solid #D3D3D3; /* Light border for subtasks */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); /* Subtle shadow for subtasks */
-}
-
-/* TaskList.css */
 
 .list-header {
   display: flex;
   align-items: left;
   justify-content: space-between;
-  background-color: #f4f4f9; /* Light background color to make it stand out */
+  background-color: #F1C555; /* Light background color to make it stand out */
   padding: 10px 15px;
   border-radius: 8px 8px 0 0; /* Rounded corners on the top */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -55,7 +44,6 @@
   top: 20px;
   text-align: left;
 }
-
 
 .expand-btn {
   background-color: #6D6DA0; /* Dark Purple for consistent branding */
@@ -74,10 +62,9 @@
   background-color: #5b5b84; /* Slightly darker on hover */
 }
 
-
 /* Task list styling */
 .task-list {
-  padding: 20px; /* No padding around task list */
+  padding: 0; /* No padding around task list */
   list-style: none; /* Remove default list styling */
   align-items: center;
   justify-content: space-between;
@@ -100,17 +87,6 @@
   align-items: center;
 }
 
-/* Completed task styling */
-.completed-item .task-text {
-  text-decoration: line-through;
-  color: #888; /* Grey color for completed tasks */
-}
-
-/* Subtask list */
-.subtask-list {
-  padding-left: 20px; /* Indent subtasks */
-}
-
 .add-task {
   display: flex;
   margin-top: 10px;
@@ -121,7 +97,6 @@
   text-align: right;
 }
 
-
 /* Other styling for inputs and buttons */
 .new-task-input {
   border: 1px solid #ccc;
@@ -130,7 +105,7 @@
 }
 
 .add-task-btn {
-  background-color: #f0a500;
+  background-color: #F1C555;
   color: white;
   border: none;
   padding: 8px 12px;
@@ -141,19 +116,18 @@
   font-weight: bold;
   align-items: right;
 }
-    
 
 .add-task-btn:hover {
   background-color: #de94e8; /* Darker shade for hover effect */
 }
 
-
 .toggle-button {
   width: 30px;
   height: 30px;
-  background-color: #6D6DA0;
+  background-color: #b0a3d4;
   color: #FFFFFF;
   border: none;
+  padding: 5px;
   border-radius: 12px; /* For a slightly rounded rectangle */
   display: flex;
   align-items: center;
@@ -172,4 +146,56 @@
 
 .toggle-button:active {
   transform: scale(0.95);
+}
+
+.task-checkbox {
+  transform: scale(1.5); /* Increase the size of the checkbox */
+  margin-right: 10px; /* Space between the checkbox and the task text */
+  margin-left: 10px; /* Space between the toggle button and the checkbox */
+  cursor: pointer;
+}
+
+
+.task-details {
+  display: flex;
+  align-items: center;
+}
+
+
+.task-text.crossed-off {
+  text-decoration: line-through; /* Cross off the text when completed */
+  color: grey;
+}
+
+
+
+.task-item {
+  list-style-type: none; /* Remove bullet points */
+  margin-bottom: 15px; /* Increased space between each task */
+  padding: 10px; /* Add some padding for better clickability */
+  transition: background-color 0.3s, text-decoration 0.3s; /* Smooth transition for background color and text */
+  position: relative; /* Allow better stacking of inner elements */
+}
+
+.completed-item {
+  background-color: #f0f0f0; /* Grey out background when completed */
+}
+
+.task-details {
+  display: flex;
+  align-items: center;
+  z-index: 2; /* Ensure this layer is clickable */
+}
+
+.task-checkbox {
+  transform: scale(1.5); /* Increase the size of the checkbox */
+  margin-right: 10px; /* Space between the checkbox and the task text */
+  margin-left: 20px; /* Space between the toggle button and the checkbox */
+  z-index: 3; /* Ensure checkbox is at the top layer for clicking */
+  cursor: pointer; /* Change cursor to pointer for better UX */
+}
+
+.task-text.crossed-off {
+  text-decoration: line-through; /* Cross off the text when completed */
+  color: grey; /* Make the text grey */
 }

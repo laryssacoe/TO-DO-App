@@ -5,21 +5,29 @@ Each table serves a specific purpose to construct the hierarchy from users to su
 
 # Imports the necessary package for sqlalchemy and initiates the database object
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
 db = SQLAlchemy()
 
 
 # Defines a User table connected by a one-to-many relationship to the List table
 class User(db.Model):
-    __tablename__ = 'users'  # Renamed to avoid conflict with reserved keywords
+    __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), nullable=False, unique=True)
-    email = db.Column(db.String(120), nullable=False, unique=True)  # Consider email validation
-    password = db.Column(db.String(200), nullable=False) 
+    email = db.Column(db.String(120), nullable=False, unique=True)
+    password = db.Column(db.String(200), nullable=False)
     lists = db.relationship('List', backref='user', cascade='all, delete-orphan', lazy=True)
 
+    # Hashes the password before storing it in the database
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
+    
     def __repr__(self):
-        return f'<User {self.id}: {self.username}>' 
+        return f'<User {self.id}: {self.username}>'
 
 # Defines a List table connected by a one-to-many relationship to the Task table
 class List(db.Model):
@@ -32,35 +40,17 @@ class List(db.Model):
 
     def __repr__(self):
         return f'<List {self.id}: {self.name}>'
-     
-# Defines a Task table connected by a one-to-many relationship to the Subtask table
+
+# Defines a Task table with a self-referential relationship for subtasks using parent_id
 class Task(db.Model):
     __tablename__ = 'tasks'
 
     id = db.Column(db.Integer, primary_key=True)
-    text = db.Column(db.String(200), nullable=False)  
+    text = db.Column(db.String(200), nullable=False)
     completed = db.Column(db.Boolean, default=False, nullable=False)
     list_id = db.Column(db.Integer, db.ForeignKey('lists.id'), nullable=False)
-
-    subtasks = db.relationship('Subtask', backref='task', cascade='all, delete-orphan', lazy=True)
+    parent_id = db.Column(db.Integer, db.ForeignKey('tasks.id'), nullable=True)
+    level = db.Column(db.Integer, nullable=False, default=1)
 
     def __repr__(self):
         return f'<Task {self.id}: {self.text}>'
-
-# Defines a Subtask table connected by a one-to-many relationship to itself for nested subtasks
-class Subtask(db.Model):
-    __tablename__ = 'subtasks'
-
-    id = db.Column(db.Integer, primary_key=True)
-    text = db.Column(db.String(200), nullable=False)  # Changed `name` to `text` for consistency
-    completed = db.Column(db.Boolean, default=False, nullable=False)
-    task_id = db.Column(db.Integer, db.ForeignKey('tasks.id'), nullable=False)
-
-    # Reference to parent subtask to allow for nesting of subtasks
-    parent_id = db.Column(db.Integer, db.ForeignKey('subtasks.id'), nullable=True)
-
-    # Creates a children connection between subtasks for self-referential relationship
-    children = db.relationship('Subtask', backref=db.backref('parent', remote_side=[id]), cascade='all, delete-orphan', lazy=True)
-
-    def __repr__(self):
-        return f'<Subtask {self.id}: {self.text}>'
