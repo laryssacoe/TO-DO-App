@@ -22,13 +22,14 @@ db.init_app(app)
 # Session configuration
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config.update(
-    SESSION_COOKIE_SAMESITE="None",
-    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_SAMESITE="Lax",
+    SESSION_COOKIE_SECURE=False,
 )
-app.permanent_session_lifetime = timedelta(minutes=5)
+app.permanent_session_lifetime = timedelta(days=10)
 
 # Enable CORS
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
+
 
 # Log requests for debugging
 @app.before_request
@@ -39,6 +40,30 @@ def log_request_info():
     print("Headers:", request.headers)
     print("Body:", request.get_data())
 
+# User Authentication Routes
+@app.route('/', methods=['POST'])
+def login():
+    data = request.json
+    user = User.query.filter_by(email=data['email']).first()
+    
+    if user and user.check_password(data['password']):
+        session.permanent = True  # Set the session as permanent
+        session['user_id'] = user.id  # Set the user ID in the session
+        
+        # Debugging: Check if the session contains the user ID
+        print("User logged in:", user.username)
+        print("Session user_id set:", session.get('user_id'))  # Log to verify session state
+        
+        return jsonify({
+            'message': 'Login successful',
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email
+            }
+        }), 200
+
+    return jsonify({'error': 'Invalid credentials'}), 401
 
 @app.route('/signup', methods=['POST'])
 def signup():
@@ -53,42 +78,47 @@ def signup():
 
     return jsonify({'message': 'User created successfully'}), 201
 
-@app.route('/login', methods=['POST'])
-def login():
-    data = request.json
-    user = User.query.filter_by(email=data['email']).first()
-    if user and user.check_password(data['password']):
-        session['user_id'] = user.id
-        return jsonify({'message': 'Login successful'}), 200
-    return jsonify({'error': 'Invalid credentials'}), 401
+@app.route('/check_session', methods=['GET', 'POST'])
+def check_session():
+    user_id = session.get('user_id')
 
-@app.route('/logout', methods=['POST'])
-def logout():
-    session.pop('user_id', None)
-    return jsonify({'message': 'Logout successful'}), 200
+    if request.method == 'GET':
+        if user_id:
+            return jsonify({'message': 'Session active', 'user_id': user_id}), 200
+        else:
+            return jsonify({'error': 'No session found'}), 401
+
+    elif request.method == 'POST':
+        session.pop('user_id', None)
+        return jsonify({'message': 'Logout successful'}), 200
 
 
-# Fetches all tasks from the database and returns them as a JSON response
+# Task Management Routes
 @app.route('/tasks', methods=['GET'])
 def get_tasks():
-    try:
-        lists = List.query.all()
-        if not lists:
-            print("No lists found")
-        else:
-            print(f"Found {len(lists)} lists")
+    # Debugging session data
+    print("Session data at /tasks:", session)  # Log the entire session state
+    user_id = session.get('user_id')
+    if not user_id:
+        print("Unauthorized access attempt. No user_id in session.")
+        return jsonify({'error': 'Unauthorized'}), 401
 
-        lists_with_tasks = [{
-            "id": list_item.id,
-            "name": list_item.name,
-            "tasks": get_task_hierarchy(list_item.tasks)
-        } for list_item in lists]
+    # Fetch the lists for the logged-in user
+    user_lists = List.query.filter_by(user_id=user_id).all()
 
-        return jsonify({'lists': lists_with_tasks}), 200
+    if not user_lists:
+        print("No lists found for user")
+    else:
+        print(f"Found {len(user_lists)} lists for user {user_id}")
 
-    except Exception as e:
-        print(f"Error occurred: {e}")  # Log the error for debugging
-        return jsonify({"error": f"An error occurred while fetching lists and tasks: {str(e)}"}), 500
+    # Format the response
+    lists_with_tasks = [{
+        "id": list_item.id,
+        "name": list_item.name,
+        "tasks": get_task_hierarchy(list_item.tasks)
+    } for list_item in user_lists]
+
+    return jsonify({'lists': lists_with_tasks}), 200
 
 def get_task_hierarchy(tasks):
     def task_to_dict(task):
@@ -101,143 +131,93 @@ def get_task_hierarchy(tasks):
         }
     return [task_to_dict(task) for task in tasks if task.parent_id is None]
 
-# Adds a new list to the database
 @app.route('/add_list', methods=['POST'])
 def add_list():
-    try:
-        data = request.json
-        if not data or 'name' not in data or not data['name'].strip():
-            return jsonify({'error': 'List name is required'}), 400
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'Unauthorized'}), 401
 
-        new_list = List(name=data['name'].strip(), user_id=1)  # Assuming user_id = 1 for testing
-        db.session.add(new_list)
-        db.session.commit()
+    data = request.json
+    if not data or 'name' not in data or not data['name'].strip():
+        return jsonify({'error': 'List name is required'}), 400
 
-        return jsonify({
-            "message": "List added successfully",
-            "list": {
-                "id": new_list.id,
-                "name": new_list.name
-            }
-        }), 201
+    new_list = List(name=data['name'].strip(), user_id=user_id)
+    db.session.add(new_list)
+    db.session.commit()
 
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": f"An internal error occurred: {str(e)}"}), 500
+    return jsonify({
+        "message": "List added successfully",
+        "list": {
+            "id": new_list.id,
+            "name": new_list.name
+        }
+    }), 201
 
-# Adds a new task or subtask to the database
+@app.route('/test', methods=['GET'])
+def test():
+    session_user = session.get('user_id')
+
+    if session_user:
+        session['user_id'] += 1
+        return jsonify({'message': 'Session active', 'user_id': session_user}), 200
+    
+    else: 
+        session['user_id'] = 1
+        return jsonify({"":session['user_id']}), 200
+
 @app.route('/add_task', methods=['POST'])
 def add_task():
-    try:
-        data = request.json
-        if not data or 'text' not in data or not data['text'].strip():
-            return jsonify({'error': 'Task text is required'}), 400
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'Unauthorized'}), 401
 
-        if 'list_id' not in data and 'parent_id' not in data:
-            return jsonify({'error': 'Either list_id or parent_id is required'}), 400
+    data = request.json
+    if not data or 'text' not in data or not data['text'].strip():
+        return jsonify({'error': 'Task text is required'}), 400
 
-        if 'parent_id' in data and data['parent_id']:
-            parent_task = Task.query.get(data['parent_id'])
-            if not parent_task:
-                return jsonify({'error': 'Parent task not found'}), 404
-            if parent_task.level >= 5:
-                return jsonify({'error': 'Cannot add more than 5 levels of subtasks'}), 400
+    if 'parent_id' in data and data['parent_id']:
+        parent_task = Task.query.get(data['parent_id'])
+        if not parent_task or parent_task.list.user_id != user_id:
+            return jsonify({'error': 'Parent task not found or unauthorized'}), 404
+        if parent_task.level >= 5:
+            return jsonify({'error': 'Cannot add more than 5 levels of subtasks'}), 400
 
-            new_task = Task(text=data['text'].strip(), completed=False, list_id=parent_task.list_id, parent_id=parent_task.id, level=parent_task.level + 1)
-        else:
-            if 'list_id' not in data or not isinstance(data['list_id'], int):
-                return jsonify({'error': 'List ID is required and must be an integer'}), 400
+        new_task = Task(text=data['text'].strip(), completed=False, list_id=parent_task.list_id, parent_id=parent_task.id, level=parent_task.level + 1)
+    else:
+        if 'list_id' not in data or not isinstance(data['list_id'], int):
+            return jsonify({'error': 'List ID is required and must be an integer'}), 400
 
-            new_task = Task(text=data['text'].strip(), completed=False, list_id=data['list_id'], level=1)
+        list_obj = List.query.get(data['list_id'])
+        if not list_obj or list_obj.user_id != user_id:
+            return jsonify({'error': 'List not found or unauthorized'}), 404
 
-        print(f"Adding task: {new_task.text}")
-        print(f"Parent ID: {new_task.parent_id}")
-        db.session.add(new_task)
-        db.session.commit()
+        new_task = Task(text=data['text'].strip(), completed=False, list_id=list_obj.id, level=1)
 
-        return jsonify({
-            "message": "Task added successfully",
-            "task": {
-                "id": new_task.id,
-                "text": new_task.text,
-                "completed": new_task.completed,
-                "level": new_task.level,
-                "subtasks": []
-            }
-        }), 201
+    db.session.add(new_task)
+    db.session.commit()
 
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": f"An internal error occurred: {str(e)}"}), 500
-
-# Toggle the completion status of a list
-@app.route('/toggle_list/<int:list_id>', methods=['POST'])
-def toggle_list(list_id):
-    try:
-        list_obj = List.query.get(list_id)
-        if not list_obj:
-            return jsonify({"error": "List not found"}), 404
-
-        # Check the completion status to determine if we should mark all as completed or not
-        new_status = not all(task.completed for task in list_obj.tasks)
-        for task in list_obj.tasks:
-            toggle_task_completion(task, new_status)
-
-        db.session.commit()
-
-        return jsonify({"message": "List and all its tasks/subtasks completion status updated"}), 200
-
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": str(e)}), 500
-
-def toggle_task_completion(task, new_status):
-    task.completed = new_status
-    subtasks = Task.query.filter_by(parent_id=task.id).all()
-    for subtask in subtasks:
-        toggle_task_completion(subtask, new_status)
+    return jsonify({
+        "message": "Task added successfully",
+        "task": {
+            "id": new_task.id,
+            "text": new_task.text,
+            "completed": new_task.completed,
+            "level": new_task.level,
+            "subtasks": []
+        }
+    }), 201
 
 
-# Update the completion status of a task
-@app.route('/update_task/<int:task_id>', methods=['POST'])
-def update_task(task_id):
-    try:
-        data = request.json
+@app.after_request
+def add_cors_headers(response):
+    print("\n=== Outgoing Response ===")
+    print(response.headers)
+    response.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
+    response.headers['Access-Control-Allow-Credentials'] = 'true'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+    return response
 
-        # Fetch the task using db.session.get for SQLAlchemy 2.0
-        task = db.session.get(Task, task_id)
-        if not task:
-            return jsonify({'error': 'Task not found'}), 404
-
-        # Update the completed status
-        task.completed = data.get('completed', task.completed)
-        db.session.commit()
-
-        # Return the updated task information
-        return jsonify({'message': 'Task updated successfully', 'task': {
-            'id': task.id,
-            'text': task.text,
-            'completed': task.completed
-        }}), 200
-
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": f"An internal error occurred: {str(e)}"}), 500
-
-
-    
-# Clears all tasks and subtasks from the database
-@app.route('/clear_tasks', methods=['POST'])
-def clear_tasks():
-    try:
-        Task.query.delete()
-        db.session.commit()
-
-        return jsonify({"message": "All tasks and subtasks have been deleted"}), 200
-    except Exception as e:
-        print(f"Error occurred while clearing tasks: {e}")
-        db.session.rollback()
-        return jsonify({"error": str(e)}), 500
 
 # Run the Flask app
 if __name__ == "__main__":
