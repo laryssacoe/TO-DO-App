@@ -1,0 +1,69 @@
+.task-actions {
+    display: inline-block;
+    margin-left: 10px;
+  }
+  
+  .action-icon {
+    cursor: pointer;
+    margin-right: 10px;
+    transition: color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .action-icon:hover {
+    color: #007bff; /* Blue color for hover */
+    transform: scale(1.1);
+  }
+  
+  .edit-icon:hover {
+    color: #ffc107; /* Yellow for Edit */
+  }
+  
+  .delete-icon:hover {
+    color: #dc3545; /* Red for Delete */
+  }
+  
+  .task-icon {
+    font-size: 1.5rem;
+    transition: transform 0.2s ease;
+  }
+  
+  .task-icon:hover {
+    transform: scale(1.1);
+  }
+  
+  .edit-input {
+    border: 2px solid #b3a2e8;
+    border-radius: 10px;
+    padding: 10px;
+    font-family: 'Poppins', sans-serif; 
+    font-weight: 400;
+    margin-left: 5px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+  
+  .edit-input:focus {
+    border-color: #6c5ce7; /* Highlight input on focus */
+  }
+  
+  .save-btn {
+    background-color: #F1C555;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-left: 10px;
+    font-family: 'Poppins', sans-serif; 
+    font-weight: bold;
+    font-size: 0.9rem;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .save-btn:hover {
+    background-color: #de94e8; /* Darker shade for hover effect */
+    transform: scale(1.05);
+  }
+  

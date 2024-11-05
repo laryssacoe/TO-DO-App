@@ -33,9 +33,6 @@ function App() {
       console.error('Network error:', error);
     }
   };
-  
-  
-  
 
   // Check if the user is already logged in when the app loads
   useEffect(() => {
@@ -68,18 +65,11 @@ function App() {
   return (
     <Router>
       <div className="App">
-        {user && <Header user={user} onLogout={handleLogout} />}
+        <Header user={user} onLogout={handleLogout} />
         <Routes>
-          {/* Redirect logged-in users from '/' to '/home' */}
-          <Route path="/" element={user ? <Navigate to="/home" /> : <Login onLogin={handleLogin} />} />
-
-          {/* Signup Route */}
-          <Route path="/signup" element={user ? <Navigate to="/home" /> : <SignUp />} />
-
-          {/* Home Page for logged-in users */}
+          <Route path="/" element={!user ? <Login onLogin={handleLogin} /> : <Navigate to="/home" />} />
+          <Route path="/signup" element={!user ? <SignUp /> : <Navigate to="/home" />} />
           <Route path="/home" element={user ? <Home user={user} tasks={tasks} setTasks={setTasks} /> : <Navigate to="/" />} />
-
-          {/* Task Page for Specific Task */}
           <Route path="/tasks/:id" element={user ? <TasksPage tasks={tasks} /> : <Navigate to="/" />} />
         </Routes>
       </div>

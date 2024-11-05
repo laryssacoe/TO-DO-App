@@ -209,7 +209,77 @@ def clear_db():
         db.session.rollback()
         return jsonify({'error': f'Error clearing database content: {str(e)}'}), 500
 
+# Edit a task or subtask
+@app.route('/update_task/<int:task_id>', methods=['PUT'])
+def update_task(task_id):
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'Unauthorized'}), 401
 
+    data = request.json
+    task = Task.query.get(task_id)
+    if not task or task.list.user_id != user_id:
+        return jsonify({'error': 'Task not found or unauthorized'}), 404
+
+    if 'text' in data:
+        task.text = data['text'].strip()
+    if 'completed' in data:
+        task.completed = data['completed']
+
+    db.session.commit()
+
+    return jsonify({'message': 'Task updated successfully'}), 200
+
+# Delete a task or subtask
+@app.route('/delete_task/<int:task_id>', methods=['DELETE'])
+def delete_task(task_id):
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    task = Task.query.get(task_id)
+    if not task or task.list.user_id != user_id:
+        return jsonify({'error': 'Task not found or unauthorized'}), 404
+
+    db.session.delete(task)
+    db.session.commit()
+
+    return jsonify({'message': 'Task deleted successfully'}), 200
+
+# Edit a list
+@app.route('/update_list/<int:list_id>', methods=['PUT'])
+def update_list(list_id):
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    data = request.json
+    list_item = List.query.get(list_id)
+    if not list_item or list_item.user_id != user_id:
+        return jsonify({'error': 'List not found or unauthorized'}), 404
+
+    if 'name' in data:
+        list_item.name = data['name'].strip()
+
+    db.session.commit()
+
+    return jsonify({'message': 'List updated successfully'}), 200
+
+# Delete a list
+@app.route('/delete_list/<int:list_id>', methods=['DELETE'])
+def delete_list(list_id):
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    list_item = List.query.get(list_id)
+    if not list_item or list_item.user_id != user_id:
+        return jsonify({'error': 'List not found or unauthorized'}), 404
+
+    db.session.delete(list_item)
+    db.session.commit()
+
+    return jsonify({'message': 'List deleted successfully'}), 200
 
 @app.after_request
 def add_cors_headers(response):
