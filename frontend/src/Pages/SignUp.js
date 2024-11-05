@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './AuthPage.css';
 
 function Signup() {
@@ -6,6 +7,7 @@ function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,6 +24,7 @@ function Signup() {
 
       if (response.ok) {
         setMessage('Signup successful. Please log in.');
+        navigate('/'); // Navigate to home page after successful login
       } else {
         setMessage(data.error);
       }
@@ -70,7 +73,7 @@ function Signup() {
         </form>
         <button
           className="switch-auth"
-          onClick={() => window.location.href = '/login'}
+          onClick={() => window.location.href = '/'}
         >
           Already have an account? Log In
         </button>
