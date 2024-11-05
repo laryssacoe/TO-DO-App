@@ -7,6 +7,7 @@ function Home() {
   const [lists, setLists] = useState([]);
   const [newListName, setNewListName] = useState('');
   const [newTaskTexts, setNewTaskTexts] = useState({});
+  const [refresh, setRefresh] = useState(false);  
 
   // Fetch lists from the database
   const fetchLists = async () => {
@@ -16,20 +17,20 @@ function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include', // Include credentials (cookies)
+        credentials: 'include',
       });
-  
       if (response.ok) {
         const data = await response.json();
-        setLists(data.lists || []);
+        setLists(data.lists);
       } else {
-        console.error('Failed to fetch lists', response.status);
+        console.error('Error fetching lists:', response.status);
       }
     } catch (error) {
       console.error('Network error:', error);
     }
-  };  
+  };
 
+  // Fetch lists when the component mounts
   useEffect(() => {
     fetchLists();
   }, []);
@@ -41,7 +42,7 @@ function Home() {
 
   // Adds a new list to the database
   const handleAddList = async () => {
-    if (newListName.trim() === '') return;
+    if (!newListName.trim()) return;
 
     try {
       const response = await fetch('http://localhost:4000/add_list', {
@@ -49,15 +50,16 @@ function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include', // Include session cookies to identify user
+        credentials: 'include',
         body: JSON.stringify({ name: newListName }),
       });
 
       if (response.ok) {
-        fetchLists(); // Refetch lists after adding a new one
-        setNewListName('');
+        const newList = await response.json();
+        setLists((prevLists) => [...prevLists, newList.list]); // Update state with the new list
+        setNewListName(''); // Clear input after adding
       } else {
-        console.error('Error adding list');
+        console.error('Error adding list:', response.status);
       }
     } catch (error) {
       console.error('Network error:', error);
@@ -71,6 +73,19 @@ function Home() {
       [listId]: text, // Update the input value for the specific list
     }));
   };
+
+  // Fetch tasks whenever refresh changes
+  useEffect(() => {
+    const fetchTasks = async () => {
+      const response = await fetch('/api/tasks');
+      if (response.ok) {
+        const data = await response.json();
+        setLists(data);
+      }
+    };
+
+    fetchTasks();
+  }, [refresh]);
 
   // Adds new task to the selected list
   const handleAddTask = async (listId) => {
@@ -88,8 +103,14 @@ function Home() {
       });
 
       if (response.ok) {
-        fetchLists(); // Refetch lists after adding a new task
-        setNewTaskTexts({ ...newTaskTexts, [listId]: '' });
+        const newTask = await response.json();
+        setLists((prevLists) =>
+          prevLists.map((list) =>
+            list.id === listId ? { ...list, tasks: [...list.tasks, newTask.task] } : list
+          )
+        );
+        setNewTaskTexts({ ...newTaskTexts, [listId]: '' }); // Clear the input field for the added task
+        setRefresh((prev) => !prev); // Trigger refresh to re-fetch tasks
       } else {
         console.error('Error adding task');
       }
@@ -98,6 +119,7 @@ function Home() {
     }
   };
 
+  // Adds new subtask to a parent task
   const handleAddSubtask = async (parentTaskId, subtaskText) => {
     try {
       const response = await fetch('http://localhost:4000/add_task', {
@@ -110,7 +132,14 @@ function Home() {
       });
 
       if (response.ok) {
-        fetchLists();
+        const newSubtask = await response.json();
+        setLists((prevLists) =>
+          prevLists.map((list) => ({
+            ...list,
+            tasks: updateSubtaskInList(list.tasks, parentTaskId, newSubtask.task),
+          }))
+        );
+        setRefresh((prev) => !prev); // Trigger refresh to re-fetch tasks
       } else {
         console.error('Failed to add subtask', response.status);
       }
@@ -118,7 +147,16 @@ function Home() {
       console.error('Network error:', error);
     }
   };
-  
+
+  // Helper function to update subtasks in a list
+  const updateSubtaskInList = (tasks, parentTaskId, newSubtask) => {
+    return tasks.map((task) => {
+      if (task.id === parentTaskId) {
+        return { ...task, subtasks: [...(task.subtasks || []), newSubtask] };
+      }
+      return task;
+    });
+  };
 
   return (
     <div className="main-container">
@@ -128,6 +166,7 @@ function Home() {
         onAddList={handleAddList}
         newListName={newListName}
         onNewListNameChange={handleNewListChange}
+        setLists={setLists}
       />
 
       <header className="header">Dashboard</header>
@@ -142,7 +181,6 @@ function Home() {
               handleNewTaskChange={handleNewTaskChange}
               handleAddTask={handleAddTask}
               handleAddSubtask={handleAddSubtask}
-              fetchLists={fetchLists} // Pass fetchLists to re-fetch the updated tasks
               setLists={setLists}
             />
           ))}

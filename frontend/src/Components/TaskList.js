@@ -1,22 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Task from './TaskItem';
 import './TaskList.css';
 
-function TaskList({ list, newTaskTexts, handleNewTaskChange, handleAddTask, handleAddSubtask, handleTaskCompletion, setLists }) {
-  const [isExpanded, setIsExpanded] = useState(true); // State to track expand/collapse
+function TaskList({ list, newTaskTexts, handleNewTaskChange, handleAddTask, handleAddSubtask, setLists, lists }) {
+  const [isExpanded, setIsExpanded] = useState(true);
 
   const handleToggleExpand = () => {
-    setIsExpanded(!isExpanded); // Toggles between true and false
+    setIsExpanded((prev) => !prev);
   };
 
   return (
     <div className="list-container">
       {/* Title with Expand/Collapse Toggle */}
       <div className="list-header">
-        <button
-          className="toggle-button"
-          onClick={() => handleToggleExpand()}
-        >
+        <button className="toggle-button" onClick={handleToggleExpand}>
           {isExpanded ? '-' : '+'}
         </button>
         <h3 className="list-title">{list.name}</h3>
@@ -33,6 +30,7 @@ function TaskList({ list, newTaskTexts, handleNewTaskChange, handleAddTask, hand
                 level={1}
                 onAddSubtask={handleAddSubtask}
                 setLists={setLists} // Pass setLists here
+                lists={lists} // Pass lists here
               />
             ))
           ) : (

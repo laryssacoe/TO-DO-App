@@ -249,37 +249,54 @@ def delete_task(task_id):
 # Edit a list
 @app.route('/update_list/<int:list_id>', methods=['PUT'])
 def update_list(list_id):
-    user_id = session.get('user_id')
-    if not user_id:
-        return jsonify({'error': 'Unauthorized'}), 401
+    try:
+        if not request.is_json:
+            return jsonify({"error": "Request must be JSON"}), 400
 
-    data = request.json
-    list_item = List.query.get(list_id)
-    if not list_item or list_item.user_id != user_id:
-        return jsonify({'error': 'List not found or unauthorized'}), 404
+        data = request.get_json()
+        new_name = data.get("name")
 
-    if 'name' in data:
-        list_item.name = data['name'].strip()
+        if not new_name:
+            return jsonify({"error": "Missing 'name' in request"}), 400
 
-    db.session.commit()
+        # Fetch the list from the database using SQLAlchemy
+        list_item = List.query.get(list_id)
 
-    return jsonify({'message': 'List updated successfully'}), 200
+        if not list_item:
+            return jsonify({"error": "List not found"}), 404
 
-# Delete a list
+        # Update the list's name
+        list_item.name = new_name
+        db.session.commit()
+
+        return jsonify({"message": "List updated successfully", "list": {"id": list_item.id, "name": list_item.name}}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()  # Ensure tables are created
+    app.run(port=4000)
+
+
+
+# Delete List Route
 @app.route('/delete_list/<int:list_id>', methods=['DELETE'])
 def delete_list(list_id):
     user_id = session.get('user_id')
     if not user_id:
         return jsonify({'error': 'Unauthorized'}), 401
 
-    list_item = List.query.get(list_id)
-    if not list_item or list_item.user_id != user_id:
+    list_to_delete = List.query.get(list_id)
+    if not list_to_delete or list_to_delete.user_id != user_id:
         return jsonify({'error': 'List not found or unauthorized'}), 404
 
-    db.session.delete(list_item)
+    db.session.delete(list_to_delete)
     db.session.commit()
 
     return jsonify({'message': 'List deleted successfully'}), 200
+
 
 @app.after_request
 def add_cors_headers(response):
@@ -294,6 +311,8 @@ def add_cors_headers(response):
 
 # Run the Flask app
 if __name__ == "__main__":
+
+    print(app.url_map)
     with app.app_context():
         try:
             db.create_all()

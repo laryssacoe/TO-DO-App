@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './Pages/HomePage';
-import TasksPage from './Pages/TasksPage';
 import SignUp from './Pages/SignUp';
 import Login from './Pages/Login';
 import Header from './Components/Header';
@@ -70,7 +69,6 @@ function App() {
           <Route path="/" element={!user ? <Login onLogin={handleLogin} /> : <Navigate to="/home" />} />
           <Route path="/signup" element={!user ? <SignUp /> : <Navigate to="/home" />} />
           <Route path="/home" element={user ? <Home user={user} tasks={tasks} setTasks={setTasks} /> : <Navigate to="/" />} />
-          <Route path="/tasks/:id" element={user ? <TasksPage tasks={tasks} /> : <Navigate to="/" />} />
         </Routes>
       </div>
     </Router>

@@ -1,17 +1,32 @@
+
+/* Header.css */
+
 .app-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 30px 30px;
-  background-color: #b0a3d4; /* Update to match your app's purple color */
-  border-bottom: 1px solid #e0e0e0;
+  position: fixed; /* Keep header fixed at the top */
+  top: 0; /* Align to the top of the page */
+  left: 0; /* Align to the left of the page */
+  width: 100%; /* Make the header full width */
+  max-width: 2000px; /* Set a maximum width to limit horizontal expansion */
+  height: 80px; /* Set a fixed height for the header */
+  background-color: #b0a3d4; /* Set the background color */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: add a shadow for separation */
+  padding: 0 20px; /* Add padding to the left and right sides only */
+  z-index: 1000; /* Ensure header stays above other elements */
+  display: flex; /* Use flexbox to control layout */
+  align-items: center; /* Align child items vertically in the center */
+  justify-content: space-between; /* Space between left and right sections */
 }
 
-.header-left, .header-right {
-  display: flex;
-  gap: 15px;
-  align-items: center;
+.header-left {
+  font-weight: bold; /* Make the text bold */
 }
+
+.header-right {
+  display: flex; /* Use flexbox for the buttons */
+  gap: 10px; /* Add space between each button */
+  margin-right: 40px;
+}
+
 
 .username {
   font-weight: bold;
@@ -24,17 +39,13 @@
   margin-left: 10px;
   padding: 8px 15px;
   background-color: #f5a623;
-  color: white;
+  color: #181846;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-weight: bold;
   font-size: 1em;
   transition: background-color 0.3s ease;
-}
-
-.btn:hover {
-  background-color: #e5941a;
 }
 
 .btn.log-out {
@@ -47,10 +58,10 @@
 
 .log-in, .sign-up {
   background-color: #F1C555;  /* Yellow */
-  color: #fff;
+  color: #181846;
 }
 
 .log-in:hover, .sign-up:hover {
-  background-color: #e67e22;  /* Darker yellow on hover */
+  background-color: #de94e8;  /* Darker yellow on hover */
 }
 

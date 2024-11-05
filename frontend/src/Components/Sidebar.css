@@ -2,35 +2,44 @@
 
 .sidebar {
 width: 20%; /* Sets sidebar width to 20% of the screen from the left */
-min-width: 200px; /* Minimum width to ensure it doesn't get too small */
-height: 100vh;        
+min-width: 250px; /* Minimum width to ensure it doesn't get too small */
+height: calc(100vh - 80px); /* Set the height to fill the page minus the header */
 background-color: #b0a3d4; /* Background color from the web app palette */
 color: #181846;
 padding: 20px;        
-left: 0;               
+left: 0;          
+top: 80px; /* Aligns the top of the sidebar with the header */     
 display: flex;
 overflow-y: auto;
-z-index: 1;
+z-index: 800;
+align-items: center;
 box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 flex-direction: column; /* Arranges lists in a column */
 align-items: stretch; /* Stretches children to fill sidebar width */
 box-sizing: border-box; 
 position: fixed; /* Keep the sidebar in a fixed position */
 }
-  
+
+
 /* Sidebar heading */
 .sidebar h2 {
+margin-top: 40px;
 font-size: 1.7em;
 margin-bottom: 20px;
+text-align: center; /* Center the heading */
 }
   
 /* Add list section (input and button) */
 .add-list-section {
 margin-bottom: 20px;
+width: 100%; /* Take full width of the sidebar */
+display: flex;
+flex-direction: column;
+align-items: center;
 }
-  
+
 .add-list-input {
-width: 90%;
+width: calc(100% - 20px);
 align-items: center;
 padding: 10px;
 margin-bottom: 10px;
@@ -39,7 +48,7 @@ border-radius: 5px;
 }
 
 .add-list-btn {
-width: 95%;
+width: 60%;
 padding: 10px;
 background-color: #F1C555; 
 color: #4a4a91;
@@ -48,6 +57,11 @@ cursor: pointer;
 border-radius: 5px;
 font-family: 'Poppins', sans-serif; 
 font-weight: bold;
+text-align: center;
+align-items: center;
+justify-content: center;
+display: flex;
+margin-bottom: 10px;
 }
   
 .add-list-btn:hover {
@@ -58,13 +72,13 @@ background-color: #de94e8;
 .lists {
 list-style-type: none; /* Removes default bullet points */
 padding: 0; 
-width: 80%; 
+width: 100%; 
 max-width: 600px; /* Sets a max width to ensure it renders nicely */
-justify-content: space-between;
-margin: 30px auto; /* Centers the list container */
+margin: 20px 0; /* Centers the list container */
 }
   
 .list-item {
+width: 90%;
 padding: 15px;
 background-color: #FFFFFF;
 border-left: 5px solid #6D6DA0; 
@@ -81,3 +95,53 @@ text-align: center;
 .list-item:hover {
 background-color: #F1C555; 
 }
+
+
+.list-actions {
+    display: inline-block;
+    margin-left: 10px;
+  }
+  
+  .edit-input {
+    margin-left: 10px;
+    padding: 8px;
+    border-radius: 5px;
+    border: 2px solid #b3a2e8;
+  }
+  
+  .save-btn {
+    background-color: #F1C555;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    margin-left: 10px;
+  }
+  
+
+
+  .list-actions {
+    display: inline-block;
+    margin-left: 10px;
+  }
+  
+  .action-icon {
+    cursor: pointer;
+    margin-right: 10px;
+    transition: color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .action-icon:hover {
+    color: #007bff; /* Blue color for hover */
+    transform: scale(1.1);
+  }
+  
+  .edit-icon:hover {
+    color: #ffc107; /* Yellow for Edit */
+  }
+  
+  .delete-icon:hover {
+    color: #dc3545; /* Red for Delete */
+  }
+  

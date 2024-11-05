@@ -50,6 +50,7 @@
   .save-btn {
     background-color: #F1C555;
     color: white;
+    font-weight: bold;
     border: none;
     padding: 8px 12px;
     border-radius: 10px;

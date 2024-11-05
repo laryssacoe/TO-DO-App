@@ -1,10 +1,7 @@
-
-
-
 /* Header style to make it centered */
 .header {
   color: black;
-  padding: 60px;
+  padding: 50px;
   font-size: 2.0em;
   text-align: center;
   font-family: 'Poppins', sans-serif;
@@ -12,6 +9,7 @@
   margin: 0 auto; /* Center the header within its container */
   width: 100%;
   box-sizing: border-box;
+  margin-top: 120px;
   transform: translateX(10%); /* Adjust for padding */
 }
 
@@ -27,6 +25,8 @@
 
 .main-content {
   width: 80%;
+  margin-top: 0;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center; /* Center-align the task lists */
