@@ -1,46 +1,75 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../Components/Sidebar';
 import TaskList from '../Components/TaskList';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import './Home.css';
 
-function Home() {
-  const [lists, setLists] = useState([]);
+function Home({ user, tasks, setTasks }) {
   const [newListName, setNewListName] = useState('');
   const [newTaskTexts, setNewTaskTexts] = useState({});
-  const [refresh, setRefresh] = useState(false);  
+  const [refresh, setRefresh] = useState(false);  // <-- Add this line
+  const [lists, setLists] = useState(tasks || []);
 
-  // Fetch lists from the database
-  const fetchLists = async () => {
-    try {
-      const response = await fetch('http://localhost:4000/tasks', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setLists(data.lists);
-      } else {
-        console.error('Error fetching lists:', response.status);
-      }
-    } catch (error) {
-      console.error('Network error:', error);
-    }
-  };
-
-  // Fetch lists when the component mounts
   useEffect(() => {
-    fetchLists();
+    if (user) {
+      setLists(tasks);
+    }
+  }, [tasks, user]);
+
+  // Fetch tasks when the component mounts
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const response = await fetch('http://localhost:4000/tasks', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Fetched tasks:', data);
+          setTasks(data.lists || []); // Directly set the fetched data without altering its structure
+          console.log('Fetched tasks updated in state:', data.lists);
+        } else {
+          console.error('Failed to fetch tasks', response.status);
+        }
+      } catch (error) {
+        console.error('Network error:', error);
+      }
+    };
+
+    fetchTasks();
   }, []);
 
-  // Handle input change for new list
+  const buildTaskHierarchy = (tasks) => {
+    const taskMap = {};
+    tasks.forEach((task) => {
+      taskMap[task.id] = { ...task, subtasks: [] };
+    });
+
+    const topLevelTasks = [];
+    tasks.forEach((task) => {
+      if (task.parent_id) {
+        if (taskMap[task.parent_id]) {
+          taskMap[task.parent_id].subtasks.push(taskMap[task.id]);
+        }
+      } else {
+        topLevelTasks.push(taskMap[task.id]);
+      }
+    });
+
+    return topLevelTasks;
+  };
+
+
   const handleNewListChange = (e) => {
     setNewListName(e.target.value);
   };
 
-  // Adds a new list to the database
   const handleAddList = async () => {
     if (!newListName.trim()) return;
 
@@ -56,8 +85,8 @@ function Home() {
 
       if (response.ok) {
         const newList = await response.json();
-        setLists((prevLists) => [...prevLists, newList.list]); // Update state with the new list
-        setNewListName(''); // Clear input after adding
+        setLists((prevLists) => [...prevLists, { ...newList.list, tasks: [] }]);
+        setNewListName('');
       } else {
         console.error('Error adding list:', response.status);
       }
@@ -66,28 +95,13 @@ function Home() {
     }
   };
 
-  // Handle input change for new task
   const handleNewTaskChange = (listId, text) => {
     setNewTaskTexts((prevState) => ({
       ...prevState,
-      [listId]: text, // Update the input value for the specific list
+      [listId]: text,
     }));
   };
 
-  // Fetch tasks whenever refresh changes
-  useEffect(() => {
-    const fetchTasks = async () => {
-      const response = await fetch('/api/tasks');
-      if (response.ok) {
-        const data = await response.json();
-        setLists(data);
-      }
-    };
-
-    fetchTasks();
-  }, [refresh]);
-
-  // Adds new task to the selected list
   const handleAddTask = async (listId) => {
     const newTaskText = newTaskTexts[listId];
     if (newTaskText?.trim() === '') return;
@@ -98,7 +112,7 @@ function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include', // Include session cookies to identify user
+        credentials: 'include',
         body: JSON.stringify({ text: newTaskText, list_id: listId }),
       });
 
@@ -109,8 +123,7 @@ function Home() {
             list.id === listId ? { ...list, tasks: [...list.tasks, newTask.task] } : list
           )
         );
-        setNewTaskTexts({ ...newTaskTexts, [listId]: '' }); // Clear the input field for the added task
-        setRefresh((prev) => !prev); // Trigger refresh to re-fetch tasks
+        setNewTaskTexts({ ...newTaskTexts, [listId]: '' });
       } else {
         console.error('Error adding task');
       }
@@ -119,74 +132,64 @@ function Home() {
     }
   };
 
-  // Adds new subtask to a parent task
-  const handleAddSubtask = async (parentTaskId, subtaskText) => {
+
+  const handleMoveTask = async (taskId, destinationListId) => {
     try {
-      const response = await fetch('http://localhost:4000/add_task', {
-        method: 'POST',
+      const response = await fetch(`http://localhost:4000/move_task/${taskId}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({ text: subtaskText, parent_id: parentTaskId }),
+        body: JSON.stringify({ list_id: destinationListId }),
       });
 
       if (response.ok) {
-        const newSubtask = await response.json();
-        setLists((prevLists) =>
-          prevLists.map((list) => ({
-            ...list,
-            tasks: updateSubtaskInList(list.tasks, parentTaskId, newSubtask.task),
-          }))
-        );
-        setRefresh((prev) => !prev); // Trigger refresh to re-fetch tasks
+        console.log(`Task ${taskId} moved successfully to list ${destinationListId}`);
+        setRefresh(prev => !prev); // Trigger a refresh to re-fetch tasks and reflect changes
       } else {
-        console.error('Failed to add subtask', response.status);
+        console.error('Failed to update task:', response.status);
       }
     } catch (error) {
       console.error('Network error:', error);
     }
   };
 
-  // Helper function to update subtasks in a list
-  const updateSubtaskInList = (tasks, parentTaskId, newSubtask) => {
-    return tasks.map((task) => {
-      if (task.id === parentTaskId) {
-        return { ...task, subtasks: [...(task.subtasks || []), newSubtask] };
-      }
-      return task;
-    });
-  };
 
   return (
-    <div className="main-container">
-      <Sidebar
-        className="sidebar"
-        lists={lists}
-        onAddList={handleAddList}
-        newListName={newListName}
-        onNewListNameChange={handleNewListChange}
-        setLists={setLists}
-      />
+    <DndProvider backend={HTML5Backend}>
+      <div className="main-container">
+        <Sidebar
+          className="sidebar"
+          lists={lists}
+          onAddList={handleAddList}
+          newListName={newListName}
+          onNewListNameChange={handleNewListChange}
+          setLists={setLists}
+        />
 
-      <header className="header">Dashboard</header>
-      <div className="content-container">
-        {/* Main Content */}
-        <div className="main-content">
-          {lists.map((list) => (
-            <TaskList
-              key={list.id}
-              list={list}
-              newTaskTexts={newTaskTexts}
-              handleNewTaskChange={handleNewTaskChange}
-              handleAddTask={handleAddTask}
-              handleAddSubtask={handleAddSubtask}
-              setLists={setLists}
-            />
-          ))}
+        <header className="header">Dashboard</header>
+        <div className="content-container">
+          <div className="main-content">
+            {Array.isArray(lists) && lists.length > 0 ? (
+              lists.map((list) => (
+                <TaskList
+                  key={list.id}
+                  list={{ ...list, tasks: Array.isArray(list.tasks) ? list.tasks : [] }}
+                  newTaskTexts={newTaskTexts}
+                  handleNewTaskChange={handleNewTaskChange}
+                  handleAddTask={handleAddTask}
+                  onMoveTask={handleMoveTask}
+                  setLists={setLists}
+                />
+              ))
+            ) : (
+              <p>No lists available</p>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </DndProvider>
   );
 }
 

@@ -7,6 +7,7 @@ import Header from './Components/Header';
 import './App.css';
 
 function App() {
+  // Define tasks and setTasks with useState before trying to pass them
   const [tasks, setTasks] = useState([]);
   const [user, setUser] = useState(null);
 
@@ -24,7 +25,17 @@ function App() {
       if (response.ok) {
         const data = await response.json();
         console.log('Fetched tasks:', data);
-        setTasks(data.lists || []);
+        if (Array.isArray(data.lists)) {
+          const newLists = data.lists.map(list => ({
+            ...list,
+            tasks: Array.isArray(list.tasks) ? list.tasks : [] // Ensure `tasks` is always an array
+          }));
+          setTasks(newLists);
+          console.log('Fetched tasks updated in state:', newLists);
+        } else {
+          console.error('Unexpected response format:', data);
+          setTasks([]);
+        }
       } else {
         console.error('Failed to fetch tasks', response.status);
       }
@@ -68,6 +79,7 @@ function App() {
         <Routes>
           <Route path="/" element={!user ? <Login onLogin={handleLogin} /> : <Navigate to="/home" />} />
           <Route path="/signup" element={!user ? <SignUp /> : <Navigate to="/home" />} />
+          {/* Pass tasks and setTasks as props to the Home component */}
           <Route path="/home" element={user ? <Home user={user} tasks={tasks} setTasks={setTasks} /> : <Navigate to="/" />} />
         </Routes>
       </div>

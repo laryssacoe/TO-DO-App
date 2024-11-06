@@ -6,7 +6,7 @@ It interacts with the database models defined in database.py to perform CRUD ope
 # Imports the necessary packages
 import os
 from flask import Flask, request, jsonify, session
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from datetime import timedelta
 from database import db, Task, User, List
 
@@ -106,19 +106,26 @@ def get_tasks():
     # Fetch the lists for the logged-in user
     user_lists = List.query.filter_by(user_id=user_id).all()
 
+    # print("User lists:", user_lists)
+
     if not user_lists:
         print("No lists found for user")
     else:
         print(f"Found {len(user_lists)} lists for user {user_id}")
 
-    # Format the response
+    # Modified tasks endpoint to ensure `tasks` is always an array
     lists_with_tasks = [{
         "id": list_item.id,
         "name": list_item.name,
-        "tasks": get_task_hierarchy(list_item.tasks)
+        "tasks": get_task_hierarchy(list_item.tasks) if list_item.tasks else []  # Always ensure 'tasks' is a list
     } for list_item in user_lists]
 
+
+    print('List', lists_with_tasks)
+
     return jsonify({'lists': lists_with_tasks}), 200
+
+
 
 def get_task_hierarchy(tasks):
     def task_to_dict(task):
@@ -127,9 +134,10 @@ def get_task_hierarchy(tasks):
             "text": task.text,
             "completed": task.completed,
             "level": task.level,
-            "subtasks": [task_to_dict(subtask) for subtask in tasks if subtask.parent_id == task.id]
+            "subtasks": [task_to_dict(subtask) for subtask in tasks if subtask.parent_id == task.id] or []  # Ensure subtasks is always an array
         }
     return [task_to_dict(task) for task in tasks if task.parent_id is None]
+
 
 @app.route('/add_list', methods=['POST'])
 def add_list():
@@ -184,6 +192,7 @@ def add_task():
     db.session.add(new_task)
     db.session.commit()
 
+    # Use jsonify here to ensure proper JSON response format
     return jsonify({
         "message": "Task added successfully",
         "task": {
@@ -191,7 +200,7 @@ def add_task():
             "text": new_task.text,
             "completed": new_task.completed,
             "level": new_task.level,
-            "subtasks": []
+            "subtasks": []  # Ensure subtasks is always an array
         }
     }), 201
 
@@ -209,7 +218,7 @@ def clear_db():
         db.session.rollback()
         return jsonify({'error': f'Error clearing database content: {str(e)}'}), 500
 
-# Edit a task or subtask
+# @app.route('/update_task/<int:task_id>', methods=['PUT'])
 @app.route('/update_task/<int:task_id>', methods=['PUT'])
 def update_task(task_id):
     user_id = session.get('user_id')
@@ -229,6 +238,7 @@ def update_task(task_id):
     db.session.commit()
 
     return jsonify({'message': 'Task updated successfully'}), 200
+
 
 # Delete a task or subtask
 @app.route('/delete_task/<int:task_id>', methods=['DELETE'])
@@ -274,12 +284,6 @@ def update_list(list_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()  # Ensure tables are created
-    app.run(port=4000)
-
-
 
 # Delete List Route
 @app.route('/delete_list/<int:list_id>', methods=['DELETE'])
@@ -288,14 +292,84 @@ def delete_list(list_id):
     if not user_id:
         return jsonify({'error': 'Unauthorized'}), 401
 
+    # Find the list by ID
     list_to_delete = List.query.get(list_id)
     if not list_to_delete or list_to_delete.user_id != user_id:
         return jsonify({'error': 'List not found or unauthorized'}), 404
 
-    db.session.delete(list_to_delete)
-    db.session.commit()
+    try:
+        # Explicitly delete all tasks associated with the list
+        Task.query.filter_by(list_id=list_to_delete.id).delete()
 
-    return jsonify({'message': 'List deleted successfully'}), 200
+        # Delete the list
+        db.session.delete(list_to_delete)
+        db.session.commit()
+        return jsonify({'message': 'List and associated tasks deleted successfully'}), 200
+    except Exception as e:
+        db.session.rollback()  # Rollback if there's an error
+        return jsonify({'error': str(e)}), 500
+
+
+
+
+
+# Move a task between lists
+@app.route('/move_task/<int:task_id>', methods=['PUT'])   
+def move_task(task_id):
+    try:
+        data = request.get_json()
+        new_list_id = data.get('list_id')
+
+        if not new_list_id:
+            return jsonify({"error": "Invalid list ID"}), 400
+
+        # Fetch the task
+        task = Task.query.get(task_id)
+        if not task:
+            return jsonify({"error": "Task not found"}), 404
+
+        # Update the list_id field of the task
+        task.list_id = new_list_id
+
+        # Update the list_id for all subtasks recursively
+        def update_subtasks(task):
+            for subtask in task.subtasks:
+                subtask.list_id = new_list_id
+                update_subtasks(subtask)
+
+        update_subtasks(task)
+
+        db.session.commit()
+
+        # Verification log: Fetch task again to confirm
+        updated_task = Task.query.get(task_id)
+        print(f"After update: Task ID {updated_task.id}, List ID {updated_task.list_id}")
+
+        return jsonify({"message": "Task moved successfully", "task": {
+            "id": task.id,
+            "list_id": task.list_id,
+            "text": task.text
+        }}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/delete_all_lists', methods=['DELETE'])
+def delete_all_lists():
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    try:
+        # Delete all lists that belong to the current user
+        List.query.filter_by(user_id=user_id).delete()
+        db.session.commit()
+        return jsonify({'message': 'All lists deleted successfully'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': f'Error deleting lists: {str(e)}'}), 500
+
 
 
 @app.after_request

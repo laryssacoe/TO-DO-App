@@ -65,6 +65,31 @@ function Sidebar({ lists, onAddList, newListName, onNewListNameChange, setLists 
     }
   };
 
+
+  const handleDeleteAllLists = async () => {
+    const confirmed = window.confirm("Are you sure you want to delete all lists? This action cannot be undone.");
+    if (!confirmed) return;
+
+    try {
+      const response = await fetch(`http://localhost:4000/delete_all_lists`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        setLists([]); // Clear all lists from the state
+      } else {
+        console.error('Error deleting all lists:', response.status);
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+    }
+  };
+  
+
   return (
     <div className="sidebar">
       <h2>To-Do Lists</h2>
@@ -120,6 +145,7 @@ function Sidebar({ lists, onAddList, newListName, onNewListNameChange, setLists 
           </div>
         ))}
       </div>
+      <button onClick={handleDeleteAllLists} className="delete-all-btn">Delete All Lists</button>
     </div>
   );
 }

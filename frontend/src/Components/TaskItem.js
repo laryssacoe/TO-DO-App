@@ -1,13 +1,22 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useDrag } from 'react-dnd';
 import { faPencilAlt, faTrash } from '@fortawesome/free-solid-svg-icons';
 import './TaskList.css';
 
-function Task({ task, level, fetchLists, setLists, lists }) {
+function Task({ task, level, fetchLists, setLists, lists, listId }) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [taskText, setTaskText] = useState(task.text);
   const [newSubtaskText, setNewSubtaskText] = useState('');
+
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: 'TASK', // This type must match the accept type in TaskList
+    item: { taskId: task.id, fromListId: listId },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  }));
 
   // Helper function to update tasks and their subtasks immutably
   const updateTaskAndSubtasks = (tasks, taskId, updates) => {
@@ -162,98 +171,104 @@ function Task({ task, level, fetchLists, setLists, lists }) {
 
   return (
     <div
-      className={`task-item ${task.completed ? 'completed-item' : ''}`}
-      style={{
-        marginBottom: '15px',
-        marginLeft: `${level * 20}px`,
-        padding: '10px',
-        borderLeft: '2px solid #ccc',
-        borderRadius: '5px',
-        position: 'relative',
-      }}
+      ref={drag}
+      className="task-item"
+      style={{ opacity: isDragging ? 0.5 : 1 }}
     >
-      <div className="task-details">
-        <button onClick={handleToggleExpand} className="toggle-button">
-          {isExpanded ? '-' : '+'}
-        </button>
-        <input
-          type="checkbox"
-          className="task-checkbox"
-          checked={task.completed}
-          onChange={handleCompletionToggle}
-        />
-        {isEditing ? (
-          <>
+      <div
+        className={`task-item ${task.completed ? 'completed-item' : ''}`}
+        style={{
+          marginBottom: '15px',
+          marginLeft: `${level * 10}px`, // Decreased margin increment to avoid excessive indentation
+          padding: '10px',
+          borderLeft: '2px solid #ccc',
+          borderRadius: '5px',
+          position: 'relative',
+        }}
+      >
+        <div className="task-details">
+          <button onClick={handleToggleExpand} className="toggle-button">
+            {isExpanded ? '-' : '+'}
+          </button>
+          <input
+            type="checkbox"
+            className="task-checkbox"
+            checked={task.completed}
+            onChange={handleCompletionToggle}
+          />
+          {isEditing ? (
+            <>
+              <input
+                type="text"
+                value={taskText}
+                onChange={(e) => setTaskText(e.target.value)}
+                className="edit-input"
+              />
+              <button onClick={handleEditTask} className="save-btn">
+                Save
+              </button>
+            </>
+          ) : (
+            <span className={`task-text ${task.completed ? 'crossed-off' : ''}`}>{task.text}</span>
+          )}
+          <div
+            className="task-icons"
+            style={{
+              display: 'flex',
+              gap: '10px',
+              marginLeft: 'auto',
+            }}
+          >
+            <FontAwesomeIcon
+              icon={faPencilAlt}
+              title="Edit Task"
+              onClick={handleEditToggle}
+              className="action-icon edit-icon"
+              style={{ color: '#b0a3d4', cursor: 'pointer', fontSize: '1.33em' }}
+            />
+            <FontAwesomeIcon
+              icon={faTrash}
+              title="Delete Task"
+              onClick={handleDeleteTask}
+              className="action-icon delete-icon"
+              style={{ color: '#b0a3d4', cursor: 'pointer', fontSize: '1.33em' }}
+            />
+          </div>
+        </div>
+
+        {/* Render Subtasks */}
+        {isExpanded && Array.isArray(task.subtasks) && task.subtasks.length > 0 && (
+          <div className="subtask-list">
+            {task.subtasks.map((subtask) => (
+              <Task
+                key={subtask.id}
+                task={subtask}
+                level={level + 1}
+                fetchLists={fetchLists}
+                setLists={setLists}
+                lists={lists}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Add Subtask Section */}
+        {level < 5 && (
+          <div className="add-subtask">
             <input
               type="text"
-              value={taskText}
-              onChange={(e) => setTaskText(e.target.value)}
-              className="edit-input"
+              placeholder="Add new subtask..."
+              value={newSubtaskText}
+              onChange={(e) => setNewSubtaskText(e.target.value)}
+              className="new-subtask-input"
+              style={{ marginTop: '5px' }}
             />
-            <button onClick={handleEditTask} className="save-btn">
-              Save
+            <button onClick={handleAddSubtask} className="add-subtask-btn">
+              Add Subtask
             </button>
-          </>
-        ) : (
-          <span className={`task-text ${task.completed ? 'crossed-off' : ''}`}>{task.text}</span>
+          </div>
         )}
-        <div
-          className="task-icons"
-          style={{
-            display: 'flex',
-            gap: '10px',
-            marginLeft: 'auto',
-          }}
-        >
-          <FontAwesomeIcon
-            icon={faPencilAlt}
-            title="Edit Task"
-            onClick={handleEditToggle}
-            className="action-icon edit-icon"
-            style={{ color: '#b0a3d4', cursor: 'pointer', fontSize: '1.33em' }}
-          />
-          <FontAwesomeIcon
-            icon={faTrash}
-            title="Delete Task"
-            onClick={handleDeleteTask}
-            className="action-icon delete-icon"
-            style={{ color: '#b0a3d4', cursor: 'pointer', fontSize: '1.33em' }}
-          />
-        </div>
       </div>
-
-      {/* Render Subtasks */}
-      {isExpanded && Array.isArray(task.subtasks) && task.subtasks.length > 0 && (
-        <div className="subtask-list">
-          {task.subtasks.map((subtask) => (
-            <Task
-              key={subtask.id}
-              task={subtask}
-              level={level + 1}
-              fetchLists={fetchLists}
-              setLists={setLists}
-              lists={lists}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* Add Subtask Section */}
-      {level < 5 && (
-        <div className="add-subtask">
-          <input
-            type="text"
-            placeholder="Add new subtask..."
-            value={newSubtaskText}
-            onChange={(e) => setNewSubtaskText(e.target.value)}
-            className="new-subtask-input"
-            style={{ marginTop: '5px' }}
-          />
-          <button onClick={handleAddSubtask} className="add-subtask-btn">
-            Add Subtask
-          </button>
-        </div>
-      )}
     </div>
   );
 }

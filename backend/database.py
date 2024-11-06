@@ -35,8 +35,8 @@ class List(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    tasks = db.relationship('Task', backref='list', cascade='all, delete-orphan', lazy=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    tasks = db.relationship('Task', backref='list', lazy=True, cascade='all, delete-orphan', passive_deletes=True)
 
     def __repr__(self):
         return f'<List {self.id}: {self.name}>'
@@ -51,6 +51,7 @@ class Task(db.Model):
     list_id = db.Column(db.Integer, db.ForeignKey('lists.id'), nullable=False)
     parent_id = db.Column(db.Integer, db.ForeignKey('tasks.id'), nullable=True)
     level = db.Column(db.Integer, nullable=False, default=1)
+    subtasks = db.relationship('Task', backref=db.backref('parent', remote_side=[id]), lazy=True)
 
     def __repr__(self):
         return f'<Task {self.id}: {self.text}>'
