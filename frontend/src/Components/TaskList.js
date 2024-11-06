@@ -9,55 +9,73 @@ function TaskList({ list, newTaskTexts, handleNewTaskChange, handleAddTask, onMo
 
   const [{ isOver }, drop] = useDrop(() => ({
     accept: 'TASK',
-    drop: (item) => {
-      console.log("LIST TO CHECK", list);
-      console.log(`Dropped item from list ${item.fromListId} to ${list.id}`);
-      console.log("ITEM TO CHECK", item);
-
+    drop: async (item) => {
       if (item.fromListId !== list.id) {
-        // Use setLists to update both the origin and destination lists at once
         setLists((prevLists) => {
           let movedTask = null;
-
-          // Create a deep copy of prevLists to avoid direct mutation
+  
+          // Step 1: Remove the task from the original list
           const updatedLists = prevLists.map((listItem) => {
             if (listItem.id === item.fromListId) {
-              // Find and remove the task from the original list
               const taskIndex = listItem.tasks.findIndex((task) => task.id === item.taskId);
               if (taskIndex !== -1) {
-                [movedTask] = listItem.tasks.splice(taskIndex, 1);
+                movedTask = listItem.tasks[taskIndex];
+                return {
+                  ...listItem,
+                  tasks: [
+                    ...listItem.tasks.slice(0, taskIndex),
+                    ...listItem.tasks.slice(taskIndex + 1),
+                  ],
+                };
               }
-              return {
-                ...listItem,
-                tasks: [...listItem.tasks], // Return updated tasks array for original list
-              };
-            } else if (listItem.id === list.id) {
-              // Add the task to the destination list
-              return {
-                ...listItem,
-                tasks: movedTask ? [...listItem.tasks, movedTask] : listItem.tasks,
-              };
             }
-            return listItem; // Return unchanged lists
+            return listItem;
           });
-
+  
+          // Step 2: Add the task to the destination list
           if (movedTask) {
-            console.log("Task moved successfully to list", list.id);
-          } else {
-            console.error("Task not found in the list to move");
+            return updatedLists.map((listItem) => {
+              if (listItem.id === list.id) {
+                return {
+                  ...listItem,
+                  tasks: [...listItem.tasks, movedTask],
+                };
+              }
+              return listItem;
+            });
           }
-
-          return updatedLists; // Update the lists state
+  
+          return updatedLists;
         });
-
-        // Optionally, make a backend call to persist the move
-        onMoveTask(item.taskId, list.id);
+  
+        // Step 3: Update the backend to reflect the new list assignment for the moved task
+        try {
+          const response = await fetch(`http://localhost:4000/update_task/${item.taskId}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ list_id: list.id }),
+          });
+  
+          if (!response.ok) {
+            console.error('Failed to update task list_id in the backend');
+          } else {
+            console.log('Task moved successfully in the backend');
+          }
+        } catch (error) {
+          console.error('Network error while updating task:', error);
+        }
       }
     },
     collect: (monitor) => ({
       isOver: monitor.isOver(),
     }),
   }));
+  
+  
+  
 
   useEffect(() => {
     setListState(list);

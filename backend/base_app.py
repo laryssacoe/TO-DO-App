@@ -235,6 +235,9 @@ def update_task(task_id):
     if 'completed' in data:
         task.completed = data['completed']
 
+    if 'list_id' in data:
+        task.list_id = data['list_id']
+
     db.session.commit()
 
     return jsonify({'message': 'Task updated successfully'}), 200
