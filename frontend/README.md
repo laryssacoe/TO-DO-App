@@ -354,7 +354,7 @@ To see the application in action, check out the demonstration video showcasing t
 
 This demonstration highlights how the application can enhance productivity by providing an intuitive platform for task organization.
 
-[Youtube Link]() or [Google Drive File]().
+[Youtube Link](https://youtu.be/GscQF1KfJ0I) or [Google Drive File](https://drive.google.com/file/d/1Ka1y5ZjideVvEaRueP67ViPVoNGw9BNv/view?usp=sharing).
 
 
 ## Acknowledgments
