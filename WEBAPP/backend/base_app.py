@@ -8,7 +8,7 @@ import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from datetime import timedelta
-from backend.database import db, Task, Subtask, User, List
+from backend.app.database import db, Task, Subtask, User, List
 
 # Create the Flask application
 app = Flask(__name__)

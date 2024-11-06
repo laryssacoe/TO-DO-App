@@ -1,3 +1,7 @@
+/* This file containes the home page of the application. 
+It essentially renders the header, the sidebar and the list structure of the app.
+The main functions are to add a new list, add a new task, move a task to a different list, and scroll to the top or bottom of the page. */ 
+
 import React, { useState, useEffect, useRef } from 'react';
 import Sidebar from '../Components/Sidebar';
 import TaskList from '../Components/TaskList';
@@ -7,6 +11,8 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import './Home.css';
 
 function Home({ user, tasks, setTasks, onLogout }) {
+
+  // State definitions
   const [newListName, setNewListName] = useState('');
   const [newTaskTexts, setNewTaskTexts] = useState({});
   const [, setRefresh] = useState(false);
@@ -15,15 +21,16 @@ function Home({ user, tasks, setTasks, onLogout }) {
   // Refs for scrolling
   const topRef = useRef(null);
   const bottomRef = useRef(null);
-  const listRefs = useRef({}); // Object to store refs for each list
+  const listRefs = useRef({}); 
 
+  // Update lists when tasks change automatically
   useEffect(() => {
     if (user) {
-      // Update directly instead of appending to avoid duplicates
       setLists(tasks);
     }
   }, [tasks, user]);
   
+  // Fetch tasks for the logged-in user from the server and re-render the lists
   useEffect(() => {
     const fetchTasks = async () => {
       try {
@@ -48,12 +55,14 @@ function Home({ user, tasks, setTasks, onLogout }) {
     };
 
     fetchTasks();
-  }, [setTasks, user]); // if bug, take this out 
+  }, [setTasks, user]); 
 
+  // Handle a list change as part of the editing and adding list functionalities
   const handleNewListChange = (e) => {
     setNewListName(e.target.value);
   };
 
+  // Add a new list to the database
   const handleAddList = async () => {
     if (!newListName.trim()) return;
   
@@ -78,9 +87,8 @@ function Home({ user, tasks, setTasks, onLogout }) {
       console.error('Network error:', error);
     }
   };
-  
-  
 
+  // Handle a new task change as part of the adding task functionality
   const handleNewTaskChange = (listId, text) => {
     setNewTaskTexts((prevState) => ({
       ...prevState,
@@ -88,6 +96,7 @@ function Home({ user, tasks, setTasks, onLogout }) {
     }));
   };
 
+  // Add a new task to the database
   const handleAddTask = async (listId) => {
     const newTaskText = newTaskTexts[listId];
     if (newTaskText?.trim() === '') return;
@@ -118,6 +127,7 @@ function Home({ user, tasks, setTasks, onLogout }) {
     }
   };
 
+  // Move a task to a different list
   const handleMoveTask = async (taskId, destinationListId) => {
     try {
       const response = await fetch(`http://localhost:4000/move_task/${taskId}`, {
@@ -131,7 +141,7 @@ function Home({ user, tasks, setTasks, onLogout }) {
 
       if (response.ok) {
         console.log(`Task ${taskId} moved successfully to list ${destinationListId}`);
-        setRefresh(prev => !prev);
+        setRefresh(prev => !prev); // Trigger a re-render after change
       } else {
         console.error('Failed to update task:', response.status);
       }
@@ -140,12 +150,12 @@ function Home({ user, tasks, setTasks, onLogout }) {
     }
   };
 
-  // Scroll to top handler
+  // Scroll to top button handler
   const scrollToTop = () => {
     topRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Scroll to bottom handler
+  // Scroll to bottom button handler
   const scrollToBottom = () => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -155,15 +165,14 @@ function Home({ user, tasks, setTasks, onLogout }) {
     listRefs.current[listId]?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  
-
   return (
     <DndProvider backend={HTML5Backend}>
       <Header user={user} onLogout={onLogout} />
       <div className="main-container">
-        {/* Top ref for scrolling */}
+        {/* Ref for scrolling to the top */}
         <div ref={topRef}></div>
 
+        {/* Sidebar for lists, passes functions as props */}
         <Sidebar
           className="sidebar"
           lists={lists}
@@ -171,11 +180,12 @@ function Home({ user, tasks, setTasks, onLogout }) {
           newListName={newListName}
           onNewListNameChange={handleNewListChange}
           setLists={setLists}
-          onListClick={scrollToList} // Pass the scroll handler to Sidebar
+          onListClick={scrollToList} 
         />
 
         <header className="header">Dashboard</header>
         <div className="scroll-buttons">
+          {/* Button to scroll to bottom */}
           <button className="scroll-btn" onClick={scrollToBottom}>Scroll to Bottom</button>
         </div>
         <div className="content-container">
@@ -184,9 +194,10 @@ function Home({ user, tasks, setTasks, onLogout }) {
               lists.map((list) => (
                 <div
                   key={list.id}
-                  ref={(el) => (listRefs.current[list.id] = el)} // Assign ref for each list
+                  ref={(el) => (listRefs.current[list.id] = el)} // Assign ref for each list for scrolling to specific list from sidebar to dashboard
                 >
 
+                  {/* TaskList component to render tasks */}
                   <TaskList
                     list={{ ...list, tasks: Array.isArray(list.tasks) ? list.tasks : [] }}
                     newTaskTexts={newTaskTexts}
@@ -203,12 +214,10 @@ function Home({ user, tasks, setTasks, onLogout }) {
           </div>
         </div>
 
-        {/* Buttons to scroll to top and bottom */}
+        {/* Buttons to scroll to top */}
         <div className="scroll-buttons">
           <button className="scroll-btn bottom" onClick={scrollToTop}>Scroll to Top</button>
         </div>
-
-        {/* Bottom ref for scrolling */}
         <div ref={bottomRef}></div>
       </div>
     </DndProvider>

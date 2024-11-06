@@ -1,61 +1,62 @@
-/* Header style to make it centered */
+/* Header */
+
 .header {
-  color: black;
-  padding: 50px;
-  font-size: 2.0em;
-  text-align: center;
-  font-family: 'Poppins', sans-serif;
-  font-weight: bold;
-  margin: 0 auto; /* Center the header within its container */
-  width: 100%;
-  box-sizing: border-box;
-  margin-top: 120px;
-  transform: translateX(10%); /* Adjust for padding */
+color: black;
+padding: 50px;
+font-size: 2.0em;
+text-align: center;
+font-family: 'Poppins', sans-serif;
+font-weight: bold;
+margin: 0 auto; /* Center the header within its container */
+width: 100%;
+box-sizing: border-box;
+margin-top: 120px;
+transform: translateX(10%); 
 }
 
 .content-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-left: auto; /* Move content container to the middle after the sidebar */
-  margin-right: auto;
-  width: 75%; /* Adjust width to fit comfortably with the sidebar */
-  padding-top: 0;
+flex: 1;
+display: flex;
+flex-direction: column;
+align-items: center;
+margin-left: auto; /* Move content container to the middle after the sidebar */
+margin-right: auto;
+width: 75%; 
+padding-top: 0;
 }
 
 .main-content {
-  width: 80%;
-  margin-top: 0;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* Center-align the task lists */
-  transform: translateX(16%); /* Adjust for padding */
+width: 80%;
+margin-top: 0;
+padding: 20px;
+display: flex;
+flex-direction: column;
+align-items: center; 
+transform: translateX(16%); 
 }
 
 
 .scroll-buttons {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-  transform: translateX(10%);
+display: flex;
+justify-content: center;
+align-items: center;
+margin-top: 20px;
+transform: translateX(10%);
 }
 
 .scroll-btn {
-  background-color: #F1C555;
-  color: #4a4a91;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-left: 5px;
-  font-family: 'Poppins', sans-serif;
-  font-weight: bold;
-  margin-bottom: 20px;
+background-color: #F1C555;
+color: #4a4a91;
+border: none;
+padding: 8px 12px;
+border-radius: 5px;
+cursor: pointer;
+margin-left: 5px;
+font-family: 'Poppins', sans-serif;
+font-weight: bold;
+margin-bottom: 20px;
 }
 
 .bottom {
-  margin-bottom: 50px;
+margin-bottom: 50px;
 }

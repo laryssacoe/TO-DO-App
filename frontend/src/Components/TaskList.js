@@ -1,12 +1,16 @@
+// This file contains the TaskList component that renders the list of tasks for a given list.
+// It also provides the functionality to add a new task to the list, toggle to expand/collapse lists, and move tasks between lists.
+
 import React, { useState, useEffect } from 'react';
 import { useDrop } from 'react-dnd';
 import Task from './TaskItem';
 import './TaskList.css';
 
-function TaskList({ list, newTaskTexts, handleNewTaskChange, handleAddTask, onMoveTask, setLists }) {
+function TaskList({ list, newTaskTexts, handleNewTaskChange, handleAddTask, setLists }) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [listState, setListState] = useState(list);
 
+  // Drop target task for tasks to move between lists
   const [{ isOver }, drop] = useDrop(() => ({
     accept: 'TASK',
     drop: async (item) => {
@@ -45,7 +49,7 @@ function TaskList({ list, newTaskTexts, handleNewTaskChange, handleAddTask, onMo
             });
           }
   
-          return updatedLists;
+          return updatedLists; // Return the updated lists after change
         });
   
         // Step 3: Update the backend to reflect the new list assignment for the moved task
@@ -74,13 +78,12 @@ function TaskList({ list, newTaskTexts, handleNewTaskChange, handleAddTask, onMo
     }),
   }));
   
-  
-  
-
+  // Update the listState when the list prop changes to automatically re-render the tasks
   useEffect(() => {
     setListState(list);
   }, [list]);
 
+  // Toggle expand/collapse of tasks under each list
   const handleToggleExpand = () => {
     setIsExpanded((prev) => !prev);
   };
@@ -122,7 +125,7 @@ function TaskList({ list, newTaskTexts, handleNewTaskChange, handleAddTask, onMo
           }}
         >
           {Array.isArray(listState.tasks) && listState.tasks.length > 0 ? (
-            renderTasks(listState.tasks) // Use helper function to render tasks and their subtasks recursively
+            renderTasks(listState.tasks) 
           ) : (
             <p>No tasks available for this list.</p>
           )}

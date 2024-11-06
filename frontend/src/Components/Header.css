@@ -1,67 +1,64 @@
-
-/* Header.css */
+/* Header */
 
 .app-header {
-  position: fixed; /* Keep header fixed at the top */
-  top: 0; /* Align to the top of the page */
-  left: 0; /* Align to the left of the page */
-  width: 100%; /* Make the header full width */
-  max-width: 2000px; /* Set a maximum width to limit horizontal expansion */
-  height: 80px; /* Set a fixed height for the header */
-  background-color: #b0a3d4; /* Set the background color */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: add a shadow for separation */
-  padding: 0 20px; /* Add padding to the left and right sides only */
-  z-index: 1000; /* Ensure header stays above other elements */
-  display: flex; /* Use flexbox to control layout */
-  align-items: center; /* Align child items vertically in the center */
-  justify-content: space-between; /* Space between left and right sections */
+position: fixed; /* Header fixed at the top */
+top: 0; /* Align to the top of the page */
+left: 0; /* Align to the left of the page */
+width: 100%; 
+max-width: 2000px; 
+height: 80px; 
+background-color: #b0a3d4; 
+box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+padding: 0 20px; 
+z-index: 1000; /* Ensure header stays above other elements */
+display: flex; 
+align-items: center; /* Align child items vertically in the center */
+justify-content: space-between; 
 }
 
 .header-left {
-  font-weight: bold; /* Make the text bold */
+font-weight: bold; /* Make the text bold */
 }
 
 .header-right {
-  display: flex; /* Use flexbox for the buttons */
-  gap: 10px; /* Add space between each button */
-  margin-right: 40px;
+display: flex; 
+gap: 10px; 
+margin-right: 40px;
 }
 
-
 .username {
-  font-weight: bold;
-  font-size: 1.7em;
-  color: #181846; /* White text for better contrast on the purple background */
-  margin-right: 20px;      
+font-weight: bold;
+font-size: 1.7em;
+color: #181846; 
+margin-right: 20px;      
 }
 
 .btn {
-  margin-left: 10px;
-  padding: 8px 15px;
-  background-color: #f5a623;
-  color: #181846;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 1em;
-  transition: background-color 0.3s ease;
+margin-left: 10px;
+padding: 8px 15px;
+background-color: #f5a623;
+color: #181846;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+font-weight: bold;
+font-size: 1em;
+transition: background-color 0.3s ease;
 }
 
 .btn.log-out {
-  background-color: #e74c3c; /* Red for Log Off button */
+background-color: #e74c3c; 
 }
 
 .btn.log-out:hover {
-  background-color: #c0392b;
+background-color: #c0392b;
 }
 
 .log-in, .sign-up {
-  background-color: #F1C555;  /* Yellow */
-  color: #181846;
+background-color: #F1C555;  
+color: #181846;
 }
 
 .log-in:hover, .sign-up:hover {
-  background-color: #de94e8;  /* Darker yellow on hover */
+background-color: #de94e8;  
 }
-

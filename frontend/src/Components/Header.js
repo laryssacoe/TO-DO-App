@@ -1,3 +1,5 @@
+// This Header component is a simple component that displays the user's name and provides buttons for signing up, logging in, and logging out.
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Header.css';
@@ -5,6 +7,7 @@ import './Header.css';
 function Header({ user, onLogout }) {
   const navigate = useNavigate();
 
+  // Handle navigation to the login page for logging out
   const handleNavigation = (path) => {
     if (user) {
       onLogout(); // Log out the user before navigating
@@ -29,6 +32,3 @@ function Header({ user, onLogout }) {
 }
 
 export default Header;
-
-
-

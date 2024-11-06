@@ -1,10 +1,10 @@
-/* Sidebar styling */
+/* Sidebar */
 
 .sidebar {
-width: 20%; /* Sets sidebar width to 20% of the screen from the left */
-min-width: 250px; /* Minimum width to ensure it doesn't get too small */
+width: 20%; 
+min-width: 250px; 
 height: calc(100vh - 80px); /* Set the height to fill the page minus the header */
-background-color: #b0a3d4; /* Background color from the web app palette */
+background-color: #b0a3d4; 
 color: #181846;
 padding: 20px;        
 left: 0;          
@@ -15,24 +15,21 @@ z-index: 800;
 align-items: center;
 box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 flex-direction: column; /* Arranges lists in a column */
-align-items: stretch; /* Stretches children to fill sidebar width */
+align-items: stretch; 
 box-sizing: border-box; 
-position: fixed; /* Keep the sidebar in a fixed position */
+position: fixed; 
 }
 
-
-/* Sidebar heading */
 .sidebar h2 {
 margin-top: 40px;
 font-size: 1.7em;
 margin-bottom: 20px;
-text-align: center; /* Center the heading */
+text-align: center; 
 }
-  
-/* Add list section (input and button) */
+
 .add-list-section {
 margin-bottom: 20px;
-width: 100%; /* Take full width of the sidebar */
+width: 100%; 
 display: flex;
 flex-direction: column;
 align-items: center;
@@ -63,20 +60,19 @@ justify-content: center;
 display: flex;
 margin-bottom: 10px;
 }
-  
+
 .add-list-btn:hover {
 background-color: #de94e8; 
 }
-  
-/* Lists section */
+
 .lists {
-list-style-type: none; /* Removes default bullet points */
+list-style-type: none;
 padding: 0; 
 width: 100%; 
-max-width: 600px; /* Sets a max width to ensure it renders nicely */
-margin: 20px 0; /* Centers the list container */
+max-width: 600px;
+margin: 20px 0; 
 }
-  
+
 .list-item {
 width: 90%;
 padding: 15px;
@@ -91,81 +87,74 @@ display: flex;
 text-align: center;
 font-weight: bold;
 }
-  
-  
+
 .list-item:hover {
 background-color: #F1C555; 
 }
 
+.list-actions {
+display: inline-block;
+margin-left: 10px;
+}
+
+.edit-input {
+margin-left: 10px;
+padding: 8px;
+border-radius: 5px;
+border: 2px solid #b3a2e8;
+}
+
+.save-btn {
+background-color: #F1C555;
+color: white;
+padding: 8px 16px;
+border-radius: 5px;
+border: none;
+cursor: pointer;
+margin-left: 10px;
+}
 
 .list-actions {
-    display: inline-block;
-    margin-left: 10px;
-  }
-  
-  .edit-input {
-    margin-left: 10px;
-    padding: 8px;
-    border-radius: 5px;
-    border: 2px solid #b3a2e8;
-  }
-  
-  .save-btn {
-    background-color: #F1C555;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
-    margin-left: 10px;
-  }
-  
+display: inline-block;
+margin-left: 10px;
+}
 
+.action-icon {
+cursor: pointer;
+margin-right: 10px;
+transition: color 0.3s ease, transform 0.2s ease;
+}
 
-  .list-actions {
-    display: inline-block;
-    margin-left: 10px;
-  }
-  
-  .action-icon {
-    cursor: pointer;
-    margin-right: 10px;
-    transition: color 0.3s ease, transform 0.2s ease;
-  }
-  
-  .action-icon:hover {
-    color: #007bff; /* Blue color for hover */
-    transform: scale(1.1);
-  }
-  
-  .edit-icon:hover {
-    color: #ffc107; /* Yellow for Edit */
-  }
-  
-  .delete-icon:hover {
-    color: #dc3545; /* Red for Delete */
-  }
-  
+.action-icon:hover {
+color: #007bff; /* Blue color for hover */
+transform: scale(1.1);
+}
 
-  .delete-all-btn {
-    background-color: #F1C555;
-    color: #4a4a91;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-left: 5px;
-    font-family: 'Poppins', sans-serif; 
-    font-weight: bold;
-    align-items: right;
-    align-self: flex-end;
-    margin-top: auto;
-  }
+.edit-icon:hover {
+color: #ffc107; /* Yellow for Edit */
+}
 
-  .delete-all-btn:disabled {
-    background-color: #f0f0f0;
-    color: #a0a0a0;
-    cursor: not-allowed;
-  }
-  
-  
+.delete-icon:hover {
+color: #dc3545; /* Red for Delete */
+}
+
+.delete-all-btn {
+background-color: #F1C555;
+color: #4a4a91;
+border: none;
+padding: 8px 12px;
+border-radius: 5px;
+cursor: pointer;
+margin-left: 5px;
+font-family: 'Poppins', sans-serif; 
+font-weight: bold;
+align-items: right;
+align-self: flex-end;
+margin-top: auto;
+}
+
+.delete-all-btn:disabled {
+background-color: #f0f0f0;
+color: #a0a0a0;
+cursor: not-allowed;
+}

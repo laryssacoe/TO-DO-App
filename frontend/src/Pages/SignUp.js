@@ -1,14 +1,19 @@
+// This sign up page is a simple form that allows users to sign up for the application.
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AuthPage.css';
 
 function Signup() {
+
+  // State definitions
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
+  // Submission of the signup form
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -20,11 +25,14 @@ function Signup() {
         credentials: 'include',
         body: JSON.stringify({ username, email, password }),
       });
+
       const data = await response.json();
 
+      // If the response is successful, display a success message and navigate to the login page
+      // Intentionally sent to the login page instead of the home page to ensure the user session is syncronized
       if (response.ok) {
         setMessage('Signup successful. Please log in.');
-        navigate('/'); // Navigate to home page after successful login
+        navigate('/'); 
       } else {
         setMessage(data.error);
       }
@@ -38,6 +46,7 @@ function Signup() {
       <div className="auth-container">
         <h2>Sign Up</h2>
         {message && <p className="error-message" style={{ color: '#e74c3c' }}>{message}</p>}
+        {/* Signup form */}
         <form className="auth-form" onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="username">Username</label>
@@ -71,6 +80,8 @@ function Signup() {
           </div>
           <button type="submit" className="auth-button">Sign Up</button>
         </form>
+
+        {/* Switch to login page */}
         <button
           className="switch-auth"
           onClick={() => window.location.href = '/'}

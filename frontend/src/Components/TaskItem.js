@@ -1,3 +1,6 @@
+// This component represents a single task item in the task list.
+// It displays the task text, completion status, and provides buttons to edit, delete, and add subtasks.
+
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDrag } from 'react-dnd';
@@ -5,13 +8,16 @@ import { faPencilAlt, faTrash } from '@fortawesome/free-solid-svg-icons';
 import './TaskList.css';
 
 function Task({ task, level, fetchLists, setLists, lists, listId }) {
+
+  // State definitions
   const [isExpanded, setIsExpanded] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [taskText, setTaskText] = useState(task.text);
   const [newSubtaskText, setNewSubtaskText] = useState('');
 
+  // Drag and drop functionality for tasks (drag only)
   const [{ isDragging }, drag] = useDrag(() => ({
-    type: 'TASK', // This type must match the accept type in TaskList
+    type: 'TASK', 
     item: { taskId: task.id, fromListId: listId },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
@@ -27,7 +33,7 @@ function Task({ task, level, fetchLists, setLists, lists, listId }) {
       if (task.subtasks && task.subtasks.length > 0) {
         return {
           ...task,
-          subtasks: updateTaskAndSubtasks(task.subtasks, taskId, updates),
+          subtasks: updateTaskAndSubtasks(task.subtasks, taskId, updates), // Recursively update subtasks
         };
       }
       return task;
@@ -46,7 +52,7 @@ function Task({ task, level, fetchLists, setLists, lists, listId }) {
       if (task.subtasks && task.subtasks.length > 0) {
         return {
           ...task,
-          subtasks: addSubtaskToTask(task.subtasks, parentTaskId, newSubtask),
+          subtasks: addSubtaskToTask(task.subtasks, parentTaskId, newSubtask), // Recursively add subtask
         };
       }
       return task;
@@ -59,14 +65,16 @@ function Task({ task, level, fetchLists, setLists, lists, listId }) {
       .filter((task) => task.id !== taskId)
       .map((task) => ({
         ...task,
-        subtasks: task.subtasks ? deleteTaskOrSubtask(task.subtasks, taskId) : [],
+        subtasks: task.subtasks ? deleteTaskOrSubtask(task.subtasks, taskId) : [], // Recursively delete subtasks
       }));
   };
 
+  // Toggle expand/collapse of subtasks
   const handleToggleExpand = () => {
     setIsExpanded(!isExpanded);
   };
 
+  // Toggle completion status of the task
   const handleCompletionToggle = async () => {
     const newCompletedStatus = !task.completed;
     try {
@@ -82,7 +90,7 @@ function Task({ task, level, fetchLists, setLists, lists, listId }) {
         setLists((prevLists) =>
           prevLists.map((list) => ({
             ...list,
-            tasks: updateTaskAndSubtasks(list.tasks, task.id, { completed: newCompletedStatus }),
+            tasks: updateTaskAndSubtasks(list.tasks, task.id, { completed: newCompletedStatus }), // Update task and subtasks
           }))
         );
       }
@@ -91,10 +99,12 @@ function Task({ task, level, fetchLists, setLists, lists, listId }) {
     }
   };
 
+  // Toggle edit mode for the task
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
   };
 
+  // Update the task text in the backend and state
   const handleEditTask = async () => {
     try {
       const response = await fetch(`http://localhost:4000/update_task/${task.id}`, {
@@ -119,6 +129,7 @@ function Task({ task, level, fetchLists, setLists, lists, listId }) {
     }
   };
 
+  // Delete the task from the backend and state
   const handleDeleteTask = async () => {
     try {
       const response = await fetch(`http://localhost:4000/delete_task/${task.id}`, {
@@ -138,6 +149,7 @@ function Task({ task, level, fetchLists, setLists, lists, listId }) {
     }
   };
 
+  // Add a new subtask to the task
   const handleAddSubtask = async () => {
     if (newSubtaskText.trim() === '') return;
 
@@ -148,6 +160,7 @@ function Task({ task, level, fetchLists, setLists, lists, listId }) {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
+        // Send the new subtask text, parent task ID, and list ID
         body: JSON.stringify({
           text: newSubtaskText,
           parent_id: task.id,
@@ -156,6 +169,7 @@ function Task({ task, level, fetchLists, setLists, lists, listId }) {
       });
       if (response.ok) {
         const newSubtask = await response.json();
+        // Update the state with the new subtask
         setLists((prevLists) =>
           prevLists.map((list) => ({
             ...list,
@@ -178,7 +192,7 @@ function Task({ task, level, fetchLists, setLists, lists, listId }) {
         className={`task-item ${task.completed ? 'completed-item' : ''}`}
         style={{
           marginBottom: '15px',
-          marginLeft: `${level * 10}px`, // Decreased margin increment to avoid excessive indentation
+          marginLeft: `${level * 10}px`, 
           padding: '10px',
           borderLeft: '2px solid #ccc',
           borderRadius: '5px',
@@ -186,6 +200,7 @@ function Task({ task, level, fetchLists, setLists, lists, listId }) {
         }}
       >
         <div className="task-details">
+          {/* Render task text, completion status, and action buttons */}
           <button onClick={handleToggleExpand} className="toggle-button">
             {isExpanded ? '-' : '+'}
           </button>
@@ -195,6 +210,8 @@ function Task({ task, level, fetchLists, setLists, lists, listId }) {
             checked={task.completed}
             onChange={handleCompletionToggle}
           />
+
+          {/* Render task text or input field based on edit mode */}
           {isEditing ? (
             <>
               <input
@@ -218,6 +235,8 @@ function Task({ task, level, fetchLists, setLists, lists, listId }) {
               marginLeft: 'auto',
             }}
           >
+
+            {/* Edit and Delete Task Actions */}
             <FontAwesomeIcon
               icon={faPencilAlt}
               title="Edit Task"
@@ -235,7 +254,7 @@ function Task({ task, level, fetchLists, setLists, lists, listId }) {
           </div>
         </div>
 
-        {/* Render Subtasks */}
+        {/* Render Subtasks Recursively */}
         {isExpanded && Array.isArray(task.subtasks) && task.subtasks.length > 0 && (
           <div className="subtask-list">
             {task.subtasks.map((subtask) => (
@@ -251,8 +270,8 @@ function Task({ task, level, fetchLists, setLists, lists, listId }) {
           </div>
         )}
 
-        {/* Add Subtask Section */}
-        {level < 4 && (
+        {/* Add Subtask Section (would allow for infinite recursion, but in order to prevent an infinite mirroring we limit the rendering to depth 3 subtasks) */}
+        {level < 3 && (
           <div className="add-task">
             <input
               type="text"

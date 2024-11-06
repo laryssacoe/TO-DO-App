@@ -1,172 +1,165 @@
-/* TaskList.css */
+/* Task List */
 
 .list-container {
-  width: 860px;
-  background-color: #F5F5FF; /* Light purple background */
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Darker shadow for more prominence */
-  margin: 30px auto; /* Space between lists and centering */
-  border: 2px solid #6D6DA0; /* Purple border */
-  text-align: left; 
-  align-items: center;
-  position: relative; /* Allows for positioning of the toggle button */
+width: 860px;
+background-color: #F5F5FF; 
+padding: 20px;
+border-radius: 10px;
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); 
+margin: 30px auto; 
+border: 2px solid #6D6DA0;
+text-align: left; 
+align-items: center;
+position: relative; 
 }
 
-
 .task-item {
-  background-color: #FFFFFF; /* White background for each task */
-  padding: 30px; /* Space around each task */
-  list-style-type: none; /* Remove bullet points */
-  align-items: center;
-  border-radius: 8px;
-  margin-bottom: 15px;
-  margin-top: 20px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25); /* Prominent shadow for task */
-  margin-bottom: 40px; /* Space between each task */
-  border: 1px solid #6D6DA0; /* Border to match the list container */
+background-color: #FFFFFF; 
+padding: 30px; /* Space around each task */
+list-style-type: none; 
+align-items: center;
+border-radius: 8px;
+margin-bottom: 15px;
+margin-top: 20px;
+box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25); 
+margin-bottom: 40px; 
+border: 1px solid #6D6DA0; 
 }
 
 .list-header {
-  display: flex;
-  align-items: left;
-  justify-content: space-between;
-  background-color: #F1C555; /* Light background color to make it stand out */
-  padding: 10px 15px;
-  border-radius: 8px 8px 0 0; /* Rounded corners on the top */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+display: flex;
+align-items: left;
+justify-content: space-between;
+background-color: #F1C555; 
+padding: 10px 15px;
+border-radius: 8px 8px 0 0; 
+box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
-
 
 .list-title {
-  font-weight: bold;
-  font-size: 1.5em;
-  align-items: left;
-  margin: 0;
-  color: #333333;
-  top: 20px;
-  text-align: left;
+font-weight: bold;
+font-size: 1.5em;
+align-items: left;
+margin: 0;
+color: #333333;
+top: 20px;
+text-align: left;
 }
 
-
 .expand-btn {
-  background-color: #6D6DA0; /* Dark Purple for consistent branding */
-  border: none;
-  color: white; /* Makes the text stand out */
-  font-size: 1.5em;
-  cursor: pointer;
-  border-radius: 5px;
-  padding: 4px 8px;
-  font-weight: bold;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.3s ease;
+background-color: #6D6DA0; 
+border: none;
+color: white;
+font-size: 1.5em;
+cursor: pointer;
+border-radius: 5px;
+padding: 4px 8px;
+font-weight: bold;
+box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+transition: background-color 0.3s ease;
 }
 
 
 .expand-btn:hover {
-  background-color: #5b5b84; /* Slightly darker on hover */
+background-color: #5b5b84; 
 }
 
-/* Task list styling */
 .task-list {
-  padding: 0; /* No padding around task list */
-  list-style: none; /* Remove default list styling */
-  align-items: center;
-  justify-content: space-between;
-  margin: 10px;
+padding: 0; 
+list-style: none; 
+align-items: center;
+justify-content: space-between;
+margin: 10px;
 }
-
 
 .task-item .task-text {
-  margin-left: 10px;
-  flex-grow: 1; /* Allow the text to take remaining space */
+margin-left: 10px;
+flex-grow: 1; 
 }
 
 .task-item input[type='checkbox'] {
-  margin-right: 10px; /* Space before task text */
+margin-right: 10px; 
 }
 
 .task-details {
-  display: flex;
-  align-items: center;
-  z-index: 2; /* Ensure this layer is clickable */
+display: flex;
+align-items: center;
+z-index: 2; 
 }
 
 .add-task {
-  display: flex;
-  margin-top: 10px;
-  padding: 8px;
-  border-radius: 5px;
-  align-items: right;
-  justify-content: right;
-  text-align: right;
+display: flex;
+margin-top: 10px;
+padding: 8px;
+border-radius: 5px;
+align-items: right;
+justify-content: right;
+text-align: right;
 }
 
-/* Other styling for inputs and buttons */
 .new-task-input {
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 8px;
+border: 1px solid #ccc;
+border-radius: 5px;
+padding: 8px;
 }
 
 .add-task-btn {
-  background-color: #F1C555;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-left: 5px;
-  font-family: 'Poppins', sans-serif; 
-  font-weight: bold;
-  align-items: right;
+background-color: #F1C555;
+color: white;
+border: none;
+padding: 8px 12px;
+border-radius: 5px;
+cursor: pointer;
+margin-left: 5px;
+font-family: 'Poppins', sans-serif; 
+font-weight: bold;
+align-items: right;
 }
 
 .add-task-btn:hover {
-  background-color: #de94e8; /* Darker shade for hover effect */
+background-color: #de94e8; 
 }
 
 .toggle-button {
-  width: 30px;
-  height: 30px;
-  background-color: #b0a3d4;
-  color: #FFFFFF;
-  border: none;
-  padding: 5px;
-  border-radius: 12px; /* For a slightly rounded rectangle */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  display: flex;
-  font-size: 1.5em;
-  cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  transition: transform 0.2s ease;
+width: 30px;
+height: 30px;
+background-color: #b0a3d4;
+color: #FFFFFF;
+border: none;
+padding: 5px;
+border-radius: 12px; 
+display: flex;
+align-items: center;
+justify-content: center;
+text-align: center;
+display: flex;
+font-size: 1.5em;
+cursor: pointer;
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+transition: transform 0.2s ease;
 }
 
 .toggle-button:hover {
-  transform: scale(1.05);
+transform: scale(1.05);
 }
 
 .toggle-button:active {
-  transform: scale(0.95);
+transform: scale(0.95);
 }
 
 .task-text.crossed-off {
-  text-decoration: line-through; /* Cross off the text when completed */
-  color: grey;
+text-decoration: line-through; /* Cross off the text when completed */
+color: grey;
 }
 
-
 .completed-item {
-  background-color: #f0f0f0; /* Grey out background when completed */
+background-color: #f0f0f0; 
 }
 
 .task-checkbox {
-  transform: scale(1.5); /* Increase the size of the checkbox */
-  margin-right: 10px; /* Space between the checkbox and the task text */
-  margin-left: 20px; /* Space between the toggle button and the checkbox */
-  z-index: 3; /* Ensure checkbox is at the top layer for clicking */
-  cursor: pointer; /* Change cursor to pointer for better UX */
+transform: scale(1.5); 
+margin-right: 10px; 
+margin-left: 20px;
+z-index: 3; 
+cursor: pointer;
 }

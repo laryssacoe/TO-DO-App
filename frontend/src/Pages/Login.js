@@ -1,13 +1,18 @@
+// This page is the login page of the application. It allows users to log in to the application.
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AuthPage.css';
 
 function Login({ onLogin }) {
+
+  // State definitions
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  // Submission of the login form
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -16,20 +21,20 @@ function Login({ onLogin }) {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include', // Include credentials (cookies)
+        credentials: 'include', 
         body: JSON.stringify({ email, password }),
       });
 
-      // Parse the response JSON
       const data = await response.json();
       console.log('Login response:', data);  // Debugging: Output login response data
 
       if (response.ok) {
         if (data.user && data.user.id) {
+
           // Make sure the response contains user data
-          console.log('Setting user:', data.user);  // Debugging: Log the user data being set
-          onLogin(data.user); // Set user in App state
-          navigate('/home'); // Navigate to home page after successful login
+          console.log('Setting user:', data.user);  
+          onLogin(data.user); // Set user in App state and navigate to the home page of user (based on the user data)
+          navigate('/home'); 
         } else {
           setError('Failed to retrieve user details.');
         }
@@ -47,6 +52,7 @@ function Login({ onLogin }) {
       <div className="auth-container">
         <h2>Log In</h2>
         {error && <p className="error-message" style={{ color: '#e74c3c', fontWeight: 'bold' }}>{error}</p>}
+        {/* Login form */}
         <form className="auth-form" onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="email">Email</label>
@@ -70,6 +76,8 @@ function Login({ onLogin }) {
           </div>
           <button type="submit" className="auth-button">Log In</button>
         </form>
+
+        {/* Switch to sign up page */}
         <button
           className="switch-auth"
           onClick={() => navigate('/signup')}
