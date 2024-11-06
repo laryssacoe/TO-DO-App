@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Sidebar from '../Components/Sidebar';
 import TaskList from '../Components/TaskList';
+import Header from '../Components/Header';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import './Home.css';
 
-function Home({ user, tasks, setTasks }) {
+function Home({ user, tasks, setTasks, onLogout }) {
   const [newListName, setNewListName] = useState('');
   const [newTaskTexts, setNewTaskTexts] = useState({});
-  const [refresh, setRefresh] = useState(false);
+  const [, setRefresh] = useState(false);
   const [lists, setLists] = useState(tasks || []);
 
   // Refs for scrolling
@@ -47,7 +48,7 @@ function Home({ user, tasks, setTasks }) {
     };
 
     fetchTasks();
-  }, []);
+  }, [setTasks, user]); // if bug, take this out 
 
   const handleNewListChange = (e) => {
     setNewListName(e.target.value);
@@ -154,8 +155,11 @@ function Home({ user, tasks, setTasks }) {
     listRefs.current[listId]?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  
+
   return (
     <DndProvider backend={HTML5Backend}>
+      <Header user={user} onLogout={onLogout} />
       <div className="main-container">
         {/* Top ref for scrolling */}
         <div ref={topRef}></div>

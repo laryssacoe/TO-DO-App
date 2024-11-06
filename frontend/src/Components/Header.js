@@ -5,14 +5,21 @@ import './Header.css';
 function Header({ user, onLogout }) {
   const navigate = useNavigate();
 
+  const handleNavigation = (path) => {
+    if (user) {
+      onLogout(); // Log out the user before navigating
+    }
+    navigate(path);
+  };
+
   return (
     <header className="app-header">
       <div className="header-left">
         {user && <span className="username">Welcome, {user.username}</span>}
       </div>
       <div className="header-right">
-        <button className="btn sign-up" onClick={() => navigate('/signup')}>Sign Up</button>
-        <button className="btn log-in" onClick={() => navigate('/')}>Log In</button>
+        <button className="btn sign-up" onClick={() => handleNavigation('/signup')}>Sign Up</button>
+        <button className="btn log-in" onClick={() => handleNavigation('/')}>Log In</button>
         {user && (
           <button className="btn log-out" onClick={onLogout}>Log Out</button>
         )}
@@ -22,3 +29,6 @@ function Header({ user, onLogout }) {
 }
 
 export default Header;
+
+
+

@@ -7,6 +7,8 @@
   height: 100vh;
   background-color: #f0f4f8; /* Light, friendly background */
   padding: 20px;
+  background: linear-gradient(135deg, #f4d6ec, #d1c1f6);
+
 }
 
 .auth-container {

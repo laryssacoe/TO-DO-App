@@ -1,12 +1,11 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencilAlt, faTrash } from '@fortawesome/free-solid-svg-icons';
 import './Sidebar.css';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 
-function Sidebar({ className, lists, onAddList, newListName, onNewListNameChange, onListClick, setLists }) {
+function Sidebar({ lists, onAddList, newListName, onNewListNameChange, onListClick, setLists }) {
   const [editingListId, setEditingListId] = useState(null); // Tracks the ID of the list being edited
   const [editListName, setEditListName] = useState(''); // State for new list name when editing
-  const listRef = useRef();
 
   const handleDeleteList = async (listId) => {
     try {

@@ -7,7 +7,7 @@ import Header from './Components/Header';
 import './App.css';
 
 function App() {
-  // Define tasks and setTasks with useState before trying to pass them
+  // State definitions
   const [tasks, setTasks] = useState([]);
   const [user, setUser] = useState(null);
 
@@ -49,7 +49,6 @@ function App() {
     const loggedInUser = localStorage.getItem('user');
     if (loggedInUser) {
       const parsedUser = JSON.parse(loggedInUser);
-      console.log('Loaded user from localStorage:', parsedUser);
       setUser(parsedUser);
     }
   }, []);
@@ -75,12 +74,12 @@ function App() {
   return (
     <Router>
       <div className="App">
+        {/* Pass user and handleLogout as props */}
         <Header user={user} onLogout={handleLogout} />
         <Routes>
           <Route path="/" element={!user ? <Login onLogin={handleLogin} /> : <Navigate to="/home" />} />
           <Route path="/signup" element={!user ? <SignUp /> : <Navigate to="/home" />} />
-          {/* Pass tasks and setTasks as props to the Home component */}
-          <Route path="/home" element={user ? <Home user={user} tasks={tasks} setTasks={setTasks} /> : <Navigate to="/" />} />
+          <Route path="/home" element={user ? <Home user={user} tasks={tasks} setTasks={setTasks} onLogout={handleLogout} /> : <Navigate to="/" />} />
         </Routes>
       </div>
     </Router>
