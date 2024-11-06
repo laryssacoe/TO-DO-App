@@ -89,6 +89,7 @@ align-items: center;
 justify-content: space-between;
 display: flex;
 text-align: center;
+font-weight: bold;
 }
   
   
@@ -144,4 +145,27 @@ background-color: #F1C555;
   .delete-icon:hover {
     color: #dc3545; /* Red for Delete */
   }
+  
+
+  .delete-all-btn {
+    background-color: #F1C555;
+    color: #4a4a91;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 5px;
+    font-family: 'Poppins', sans-serif; 
+    font-weight: bold;
+    align-items: right;
+    align-self: flex-end;
+    margin-top: auto;
+  }
+
+  .delete-all-btn:disabled {
+    background-color: #f0f0f0;
+    color: #a0a0a0;
+    cursor: not-allowed;
+  }
+  
   

@@ -1,11 +1,12 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencilAlt, faTrash } from '@fortawesome/free-solid-svg-icons';
 import './Sidebar.css';
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
-function Sidebar({ lists, onAddList, newListName, onNewListNameChange, setLists }) {
+function Sidebar({ className, lists, onAddList, newListName, onNewListNameChange, onListClick, setLists }) {
   const [editingListId, setEditingListId] = useState(null); // Tracks the ID of the list being edited
   const [editListName, setEditListName] = useState(''); // State for new list name when editing
+  const listRef = useRef();
 
   const handleDeleteList = async (listId) => {
     try {
@@ -107,45 +108,52 @@ function Sidebar({ lists, onAddList, newListName, onNewListNameChange, setLists 
       </div>
       <div className="lists-container">
         {lists.map((list) => (
-          <div key={list.id} className="list-item">
-            {editingListId === list.id ? (
-              <>
-                <input
-                  type="text"
-                  value={editListName}
-                  onChange={(e) => setEditListName(e.target.value)}
-                  placeholder="Enter new list name"
-                  className="edit-input"
-                />
-                <button onClick={handleSaveEdit} className="save-btn">
-                  Save
-                </button>
-              </>
-            ) : (
-              <>
-                <span>{list.name}</span>
-                <div className="list-actions">
-                  <FontAwesomeIcon
-                    icon={faPencilAlt}
-                    title="Edit List"
-                    onClick={() => handleEditList(list.id, list.name)}
-                    className="action-icon edit-icon"
-                    style={{ color: '#b0a3d4', cursor: 'pointer', fontSize: '1.33em' }}
+          <div key={list.id} className="list-item-container">
+            {/* Clicking on the list item to select and scroll */}
+
+            {/* Editing or Viewing List Actions */}
+            <div className="list-item" onClick={() => onListClick(list.id)}>
+              {editingListId === list.id ? (
+                <>
+                  <input
+                    type="text"
+                    value={editListName}
+                    onChange={(e) => setEditListName(e.target.value)}
+                    placeholder="Enter new list name"
+                    className="edit-input"
                   />
-                  <FontAwesomeIcon
-                    icon={faTrash}
-                    title="Delete List"
-                    onClick={() => handleDeleteList(list.id)}
-                    className="action-icon delete-icon"
-                    style={{ color: '#b0a3d4', cursor: 'pointer', fontSize: '1.33em' }}
-                  />
-                </div>
-              </>
-            )}
+                  <button onClick={handleSaveEdit} className="save-btn">
+                    Save
+                  </button>
+                </>
+              ) : (
+                <>
+                  <span>{list.name}</span>
+                  <div className="list-actions">
+                    <FontAwesomeIcon
+                      icon={faPencilAlt}
+                      title="Edit List"
+                      onClick={() => handleEditList(list.id, list.name)}
+                      className="action-icon edit-icon"
+                      style={{ color: '#b0a3d4', cursor: 'pointer', fontSize: '1.33em' }}
+                    />
+                    <FontAwesomeIcon
+                      icon={faTrash}
+                      title="Delete List"
+                      onClick={() => handleDeleteList(list.id)}
+                      className="action-icon delete-icon"
+                      style={{ color: '#b0a3d4', cursor: 'pointer', fontSize: '1.33em' }}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         ))}
       </div>
-      <button onClick={handleDeleteAllLists} className="delete-all-btn">Delete All Lists</button>
+      <button onClick={handleDeleteAllLists} className="delete-all-btn" disabled={lists.length === 0}>
+        Delete All Lists
+      </button>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Sidebar from '../Components/Sidebar';
 import TaskList from '../Components/TaskList';
 import { DndProvider } from 'react-dnd';
@@ -8,16 +8,21 @@ import './Home.css';
 function Home({ user, tasks, setTasks }) {
   const [newListName, setNewListName] = useState('');
   const [newTaskTexts, setNewTaskTexts] = useState({});
-  const [refresh, setRefresh] = useState(false);  // <-- Add this line
+  const [refresh, setRefresh] = useState(false);
   const [lists, setLists] = useState(tasks || []);
+
+  // Refs for scrolling
+  const topRef = useRef(null);
+  const bottomRef = useRef(null);
+  const listRefs = useRef({}); // Object to store refs for each list
 
   useEffect(() => {
     if (user) {
+      // Update directly instead of appending to avoid duplicates
       setLists(tasks);
     }
   }, [tasks, user]);
-
-  // Fetch tasks when the component mounts
+  
   useEffect(() => {
     const fetchTasks = async () => {
       try {
@@ -32,8 +37,7 @@ function Home({ user, tasks, setTasks }) {
         if (response.ok) {
           const data = await response.json();
           console.log('Fetched tasks:', data);
-          setTasks(data.lists || []); // Directly set the fetched data without altering its structure
-          console.log('Fetched tasks updated in state:', data.lists);
+          setTasks(data.lists || []);
         } else {
           console.error('Failed to fetch tasks', response.status);
         }
@@ -45,34 +49,13 @@ function Home({ user, tasks, setTasks }) {
     fetchTasks();
   }, []);
 
-  const buildTaskHierarchy = (tasks) => {
-    const taskMap = {};
-    tasks.forEach((task) => {
-      taskMap[task.id] = { ...task, subtasks: [] };
-    });
-
-    const topLevelTasks = [];
-    tasks.forEach((task) => {
-      if (task.parent_id) {
-        if (taskMap[task.parent_id]) {
-          taskMap[task.parent_id].subtasks.push(taskMap[task.id]);
-        }
-      } else {
-        topLevelTasks.push(taskMap[task.id]);
-      }
-    });
-
-    return topLevelTasks;
-  };
-
-
   const handleNewListChange = (e) => {
     setNewListName(e.target.value);
   };
 
   const handleAddList = async () => {
     if (!newListName.trim()) return;
-
+  
     try {
       const response = await fetch('http://localhost:4000/add_list', {
         method: 'POST',
@@ -82,10 +65,10 @@ function Home({ user, tasks, setTasks }) {
         credentials: 'include',
         body: JSON.stringify({ name: newListName }),
       });
-
+  
       if (response.ok) {
         const newList = await response.json();
-        setLists((prevLists) => [...prevLists, { ...newList.list, tasks: [] }]);
+        setLists((prevLists) => [...prevLists.filter((list) => list.id !== newList.list.id), { ...newList.list, tasks: [] }]);
         setNewListName('');
       } else {
         console.error('Error adding list:', response.status);
@@ -94,6 +77,8 @@ function Home({ user, tasks, setTasks }) {
       console.error('Network error:', error);
     }
   };
+  
+  
 
   const handleNewTaskChange = (listId, text) => {
     setNewTaskTexts((prevState) => ({
@@ -132,7 +117,6 @@ function Home({ user, tasks, setTasks }) {
     }
   };
 
-
   const handleMoveTask = async (taskId, destinationListId) => {
     try {
       const response = await fetch(`http://localhost:4000/move_task/${taskId}`, {
@@ -146,7 +130,7 @@ function Home({ user, tasks, setTasks }) {
 
       if (response.ok) {
         console.log(`Task ${taskId} moved successfully to list ${destinationListId}`);
-        setRefresh(prev => !prev); // Trigger a refresh to re-fetch tasks and reflect changes
+        setRefresh(prev => !prev);
       } else {
         console.error('Failed to update task:', response.status);
       }
@@ -155,10 +139,27 @@ function Home({ user, tasks, setTasks }) {
     }
   };
 
+  // Scroll to top handler
+  const scrollToTop = () => {
+    topRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // Scroll to bottom handler
+  const scrollToBottom = () => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // Scroll to specific list handler
+  const scrollToList = (listId) => {
+    listRefs.current[listId]?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="main-container">
+        {/* Top ref for scrolling */}
+        <div ref={topRef}></div>
+
         <Sidebar
           className="sidebar"
           lists={lists}
@@ -166,28 +167,45 @@ function Home({ user, tasks, setTasks }) {
           newListName={newListName}
           onNewListNameChange={handleNewListChange}
           setLists={setLists}
+          onListClick={scrollToList} // Pass the scroll handler to Sidebar
         />
 
         <header className="header">Dashboard</header>
+        <div className="scroll-buttons">
+          <button className="scroll-btn" onClick={scrollToBottom}>Scroll to Bottom</button>
+        </div>
         <div className="content-container">
           <div className="main-content">
             {Array.isArray(lists) && lists.length > 0 ? (
               lists.map((list) => (
-                <TaskList
+                <div
                   key={list.id}
-                  list={{ ...list, tasks: Array.isArray(list.tasks) ? list.tasks : [] }}
-                  newTaskTexts={newTaskTexts}
-                  handleNewTaskChange={handleNewTaskChange}
-                  handleAddTask={handleAddTask}
-                  onMoveTask={handleMoveTask}
-                  setLists={setLists}
-                />
+                  ref={(el) => (listRefs.current[list.id] = el)} // Assign ref for each list
+                >
+
+                  <TaskList
+                    list={{ ...list, tasks: Array.isArray(list.tasks) ? list.tasks : [] }}
+                    newTaskTexts={newTaskTexts}
+                    handleNewTaskChange={handleNewTaskChange}
+                    handleAddTask={handleAddTask}
+                    onMoveTask={handleMoveTask}
+                    setLists={setLists}
+                  />
+                </div>
               ))
             ) : (
               <p>No lists available</p>
             )}
           </div>
         </div>
+
+        {/* Buttons to scroll to top and bottom */}
+        <div className="scroll-buttons">
+          <button className="scroll-btn bottom" onClick={scrollToTop}>Scroll to Top</button>
+        </div>
+
+        {/* Bottom ref for scrolling */}
+        <div ref={bottomRef}></div>
       </div>
     </DndProvider>
   );

@@ -13,30 +13,26 @@ function TaskList({ list, newTaskTexts, handleNewTaskChange, handleAddTask, onMo
       console.log("LIST TO CHECK", list);
       console.log(`Dropped item from list ${item.fromListId} to ${list.id}`);
       console.log("ITEM TO CHECK", item);
-  
+
       if (item.fromListId !== list.id) {
-        // Use setLists to update both the origin and destination lists immutably
+        // Use setLists to update both the origin and destination lists at once
         setLists((prevLists) => {
           let movedTask = null;
-  
-          // Create a new updatedLists array to avoid mutating prevLists
+
+          // Create a deep copy of prevLists to avoid direct mutation
           const updatedLists = prevLists.map((listItem) => {
             if (listItem.id === item.fromListId) {
-              // Remove the task from the original list immutably
-              const updatedTasks = listItem.tasks.filter((task) => {
-                if (task.id === item.taskId) {
-                  movedTask = task; // Capture the moved task
-                  return false; // Remove the task from the original list
-                }
-                return true; // Keep other tasks
-              });
-  
+              // Find and remove the task from the original list
+              const taskIndex = listItem.tasks.findIndex((task) => task.id === item.taskId);
+              if (taskIndex !== -1) {
+                [movedTask] = listItem.tasks.splice(taskIndex, 1);
+              }
               return {
                 ...listItem,
-                tasks: updatedTasks,
+                tasks: [...listItem.tasks], // Return updated tasks array for original list
               };
             } else if (listItem.id === list.id) {
-              // Add the task to the destination list immutably
+              // Add the task to the destination list
               return {
                 ...listItem,
                 tasks: movedTask ? [...listItem.tasks, movedTask] : listItem.tasks,
@@ -44,16 +40,16 @@ function TaskList({ list, newTaskTexts, handleNewTaskChange, handleAddTask, onMo
             }
             return listItem; // Return unchanged lists
           });
-  
+
           if (movedTask) {
             console.log("Task moved successfully to list", list.id);
           } else {
             console.error("Task not found in the list to move");
           }
-  
-          return updatedLists;
+
+          return updatedLists; // Update the lists state
         });
-  
+
         // Optionally, make a backend call to persist the move
         onMoveTask(item.taskId, list.id);
       }
@@ -61,7 +57,7 @@ function TaskList({ list, newTaskTexts, handleNewTaskChange, handleAddTask, onMo
     collect: (monitor) => ({
       isOver: monitor.isOver(),
     }),
-  }));  
+  }));
 
   useEffect(() => {
     setListState(list);

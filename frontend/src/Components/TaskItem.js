@@ -172,7 +172,6 @@ function Task({ task, level, fetchLists, setLists, lists, listId }) {
   return (
     <div
       ref={drag}
-      className="task-item"
       style={{ opacity: isDragging ? 0.5 : 1 }}
     >
       <div
@@ -253,17 +252,17 @@ function Task({ task, level, fetchLists, setLists, lists, listId }) {
         )}
 
         {/* Add Subtask Section */}
-        {level < 5 && (
-          <div className="add-subtask">
+        {level < 4 && (
+          <div className="add-task">
             <input
               type="text"
               placeholder="Add new subtask..."
               value={newSubtaskText}
               onChange={(e) => setNewSubtaskText(e.target.value)}
-              className="new-subtask-input"
+              className="new-task-input"
               style={{ marginTop: '5px' }}
             />
-            <button onClick={handleAddSubtask} className="add-subtask-btn">
+            <button onClick={handleAddSubtask} className="add-task-btn">
               Add Subtask
             </button>
           </div>
