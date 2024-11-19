@@ -2,7 +2,7 @@
 
 This is a **Task Management Application** built with web technologies, providing users with an intuitive and efficient way to manage their daily tasks. Users can create, edit, delete, and track the status of their tasks, helping them stay organized and productive. Tasks can have additional subtasks that allow users to tackle their problems breaking them down one by one to complete the task. 
 
-## Table of Contents
+## Table of Contents 
 
 - [About the Project](#about-the-project)
 - [Tech Stack](#tech-stack)
