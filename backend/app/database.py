@@ -1,5 +1,5 @@
 """
-This file contains the database models for the application. 
+This file contains the database models for the application. The models are defined using SQLAlchemy ORM.
 Each table serves a specific purpose to construct the hierarchy from users to sub-tasks.
 """
 
