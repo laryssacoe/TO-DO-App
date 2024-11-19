@@ -12,7 +12,6 @@ This is a **Task Management Application** built with web technologies, providing
 - [Functionality](#functionality)
 - [Demonstration](#demonstration)
 - [Acknowledgements](#acknowledgments)
-- [AI Statement](#ai-statement)
 
 ## About the Project
 This app is designed to help you organize your daily activities with ease. Whether you are managing personal tasks, collaborating on team projects, or keeping track of multiple to-do lists, this application provides an intuitive platform to streamline your productivity.
@@ -359,6 +358,3 @@ This demonstration highlights how the application can enhance productivity by pr
 
 ## Acknowledgments
 I would like to acknowledge the support of peers in collaborating in this project. 
-
-## AI Statement
-Some elements of this project, such as code debugging and documentation improvements, were assisted by AI tools like  ChatGPT, which facilitated troubleshooting, and contributed to optimizing the development process.
